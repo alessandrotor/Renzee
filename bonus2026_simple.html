@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bonus 2026 - Simple</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+            background: #f4f4f4;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-top: 0;
+            font-size: 1.5rem;
+        }
+
+        .group {
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            margin-bottom: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+
+        .result.zero {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .result small {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: normal;
+            margin-top: 5px;
+            color: #555;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Calcolo Bonus 2026</h1>
+
+        <div class="group">
+            <label>Redditi (RAL + Altri)</label>
+            <input type="number" id="ral" placeholder="RAL (es. 21000)" oninput="calc()">
+            <input type="number" id="altri" placeholder="Altri Redditi" oninput="calc()">
+        </div>
+
+        <div class="group">
+            <label>Famiglia e Spese</label>
+            <input type="number" id="figli" placeholder="N° Figli a carico" oninput="calc()">
+            <input type="number" id="sanita" placeholder="Spese Sanitarie (€)" oninput="calc()">
+            <input type="number" id="trasporti" placeholder="Trasporti Pubblici (€)" oninput="calc()">
+        </div>
+
+        <div class="group">
+            <label>Casa</label>
+            <select id="affitto" onchange="calc()">
+                <option value="0">Nessun Affitto</option>
+                <option value="300">Libero / Cedolare (300€)</option>
+                <option value="495">Canone Concordato (495€)</option>
+                <option value="giovani">Giovani Under 31 (20%)</option>
+            </select>
+            <div id="div-canone" style="display:none">
+                <input type="number" id="canone" placeholder="Canone Annuo (€)" oninput="calc()">
+            </div>
+            <input type="number" id="mutuo" placeholder="Interessi Mutuo (€)" style="margin-top:5px" oninput="calc()">
+            <input type="number" id="edilizia" placeholder="Rata Edilizia (€)" oninput="calc()">
+        </div>
+
+        <div id="res-box" class="result zero">
+            Bonus: 0 €
+            <small>Compila i dati per il calcolo</small>
+        </div>
+    </div>
+
+    <script>
+        function calc() {
+            const val = (id) => parseFloat(document.getElementById(id).value) || 0;
+
+            const ral = val('ral');
+            const altri = val('altri');
+            const tot = ral + altri;
+
+            const figli = val('figli');
+            const sanita = val('sanita');
+            const trasporti = val('trasporti');
+
+            const affittoType = document.getElementById('affitto').value;
+            const canone = val('canone');
+            document.getElementById('div-canone').style.display = (affittoType === 'giovani') ? 'block' : 'none';
+
+            const mutuo = val('mutuo');
+            const edilizia = val('edilizia');
+
+            // Logic from original file
+            if (tot <= 0) { show(0, "Inserisci reddito", true); return; }
+            if (tot > 28000) { show(0, "Reddito > 28.000€ (Non spetta)", true); return; }
+
+            let irpef = (tot <= 28000) ? (tot * 0.23) : (28000 * 0.23 + (tot - 28000) * 0.35); // Simple calc for range check
+
+            let detLav = 0;
+            if (ral > 0) {
+                if (tot <= 15000) detLav = 1955;
+                else if (tot <= 28000) detLav = 1910 + 1190 * ((28000 - tot) / 13000);
+            }
+
+            if (tot <= 15000) {
+                if (irpef > detLav) show(1200, "Bonus Pieno (Reddito < 15k)", false);
+                else show(0, "Incapiente (IRPEF < Detr. Lavoro)", true);
+                return;
+            }
+
+            // > 15k Logic
+            let detFigli = (figli > 0) ? Math.max(0, (figli * 950) * ((95000 - tot) / 95000)) : 0;
+            let detSpese = Math.max(0, (sanita - 129.11) * 0.19) + (Math.min(trasporti, 250) * 0.19);
+
+            let detAffitto = 0;
+            if (affittoType === 'giovani') {
+                if (tot <= 15493.71) {
+                    let d = canone * 0.20;
+                    detAffitto = (canone === 0) ? 0 : Math.max(991.60, Math.min(2000, d));
+                }
+            } else {
+                let fixed = parseFloat(affittoType) || 0;
+                if (tot <= 15493) detAffitto = fixed;
+                else if (tot <= 30987) detAffitto = fixed * 0.5;
+            }
+
+            let detAltre = (Math.min(mutuo, 4000) * 0.19) + edilizia;
+
+            let detTot = detLav + detFigli + detSpese + detAffitto + detAltre;
+
+            let bonus = Math.min(1200, Math.max(0, detTot - irpef));
+
+            if (bonus > 0) show(bonus, "Bonus Spettante", false);
+            else show(0, `Mancano ${Math.round(irpef - detTot)}€ di detrazioni`, true);
+        }
+
+        function show(amount, text, isZero) {
+            const el = document.getElementById('res-box');
+            el.className = 'result ' + (isZero ? 'zero' : '');
+            el.innerHTML = `Bonus: ${Math.round(amount)} €<small>${text}</small>`;
+        }
+    </script>
+
+</body>
+
+</html>
