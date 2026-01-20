@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Simulatore Bonus 2026 - Versione Stabile</title>
+    <title>Simulatore Bonus 2026</title>
     <style>
         :root {
             --blue: #2563eb;
@@ -32,14 +32,91 @@
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
             box-sizing: border-box;
+            position: relative;
+        }
+
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
         }
 
         h2 {
             color: var(--blue);
-            text-align: center;
-            margin-top: 0;
+            margin: 0;
             font-size: 1.6rem;
+            text-align: left;
+            /* Align left to sit next to toggle */
         }
+
+        @media (max-width: 500px) {
+            .header-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            h2 {
+                text-align: center;
+            }
+        }
+
+        /* Toggle Switch */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--slate);
+            font-weight: 600;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+            margin: 0 8px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #cbd5e1;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--blue);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(20px);
+        }
+
+        /* --- */
 
         .section-title {
             font-size: 0.75rem;
@@ -170,49 +247,42 @@
             border-top: 2px solid #cbd5e1;
         }
 
-        .btn-print {
-            width: 100%;
-            padding: 15px;
-            background: var(--blue);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 20px;
+        /* Hiding Logic */
+        .adv-only {
+            display: none;
         }
 
-        @media print {
+        .mode-full .adv-only {
+            display: block;
+        }
 
-            .btn-print,
-            .field,
-            .section-title,
-            h2,
-            input,
-            select,
-            label {
-                display: none;
-            }
+        .mode-full .adv-field {
+            display: flex;
+        }
 
-            .box {
-                box-shadow: none;
-                border: none;
-                padding: 0;
-            }
+        /* For flex fields */
 
-            .res-box {
-                background: white;
-                border: 1px solid #eee;
-                margin-top: 0;
-            }
+        /* Specific tweaks for grid layout when inputs are hidden/shown */
+        .mode-full .adv-grid-item {
+            display: block;
         }
     </style>
 </head>
 
 <body>
 
-    <div class="box">
-        <h2>Simulatore Bonus 2026</h2>
+    <div class="box" id="main-box">
+        <div class="header-row">
+            <h2>Simulatore Bonus 2026</h2>
+            <div class="toggle-container">
+                <span>Essenziale</span>
+                <label class="switch">
+                    <input type="checkbox" id="mode-toggle" onchange="toggleMode()">
+                    <span class="slider"></span>
+                </label>
+                <span>Completo</span>
+            </div>
+        </div>
 
         <div class="section-title">Redditi</div>
         <div class="grid">
@@ -229,9 +299,8 @@
         <div class="section-title">Detrazioni</div>
         <div class="grid">
             <div class="field">
-                <label>Figli a Carico Detraibili n°</label>
-                <div class="form-note">(es. età > 21
-                    anni, con disabilità, ecc.)</div>
+                <label>Figli a Carico n°</label>
+                <div class="form-note adv-only">(es. età > 21 anni, con disabilità, ecc.)</div>
                 <input type="number" id="figli" value="0" oninput="calcola()">
             </div>
             <div class="field">
@@ -240,13 +309,17 @@
             </div>
         </div>
 
-        <div class="grid">
+        <!-- Extra row for Full Mode -->
+        <div class="grid adv-only">
             <div class="field">
                 <label>Trasporti Pubblici €</label>
                 <input type="number" id="trasporti" value="0" oninput="calcola()">
             </div>
+        </div>
+
+        <div class="grid">
             <div class="field">
-                <label>Tipo di Affitto</label>
+                <label>Affitto</label>
                 <select id="affitto" onchange="calcola()">
                     <option value="0">Nessuno</option>
                     <option value="300">Libero / Cedolare (300€)</option>
@@ -260,8 +333,8 @@
             </div>
         </div>
 
-        <div class="section-title">Altre Detrazioni (Ante 2022)</div>
-        <div class="grid">
+        <div class="section-title adv-only">Altre Detrazioni (Ante 2022)</div>
+        <div class="grid adv-only">
             <div class="field">
                 <label>Interessi Mutuo 1ª Casa €</label>
                 <div class="form-note">(stipulati entro il 31/12/2021)</div>
@@ -270,8 +343,7 @@
             <div class="field">
                 <label>Rata Detrazione Edilizia €</label>
                 <div class="form-note">(spese sostenute entro il 2021)</div>
-                <input type="number" id="edilizia" value="0" placeholder="Es. 500 (la rata annuale)"
-                    oninput="calcola()">
+                <input type="number" id="edilizia" value="0" placeholder="Es. 500" oninput="calcola()">
             </div>
         </div>
 
@@ -284,40 +356,58 @@
             <div class="section-title" style="border:none; font-size: 0.7rem; margin-top: 15px;">Dettaglio Detrazioni
             </div>
             <div class="line sub"><span>Lavoro Dipendente:</span> <span id="out-det-lavoro">0 €</span></div>
-            <div class="line sub"><span>Figli a Carico:</span> <span id="out-det-figli">0 €</span></div>
-            <div class="line sub"><span>Sanità e Trasporti:</span> <span id="out-det-spese">0 €</span></div>
-            <div class="line sub"><span>Affitto Spettante:</span> <span id="out-det-affitto">0 €</span></div>
-            <div class="line sub"><span>Mutuo ed Edilizia:</span> <span id="out-det-altre">0 €</span></div>
 
-            <div class="line highlight"><span>TOTALE DETRAZIONI:</span> <span id="out-det-totale">0 €</span></div>
+            <!-- Essential View Aggregated -->
+            <div class="line sub ess-only"><span>Famiglia e Casa:</span> <span id="out-det-famiglia-casa">0 €</span>
+            </div>
+
+            <!-- Full View Detailed -->
+            <div class="line sub adv-only"><span>Figli a Carico:</span> <span id="out-det-figli">0 €</span></div>
+            <div class="line sub adv-only"><span>Sanità e Trasporti:</span> <span id="out-det-spese">0 €</span></div>
+            <div class="line sub adv-only"><span>Affitto Spettante:</span> <span id="out-det-affitto">0 €</span></div>
+            <div class="line sub adv-only"><span>Mutuo ed Edilizia:</span> <span id="out-det-altre">0 €</span></div>
 
             <div id="alert-gap" class="alert alert-gap"></div>
             <div id="alert-danger" class="alert alert-danger"></div>
 
             <div class="total-bonus"><span>BONUS ANNUO:</span> <span id="out-bonus">0 €</span></div>
         </div>
-
-        <button class="btn-print" onclick="window.print()">Scarica Report PDF</button>
     </div>
 
     <script>
+        function toggleMode() {
+            const isFull = document.getElementById('mode-toggle').checked;
+            const box = document.getElementById('main-box');
+
+            if (isFull) {
+                box.classList.add('mode-full');
+                // Hide essential-only elements if needed (we use .ess-only in CSS mostly)
+                document.querySelectorAll('.ess-only').forEach(el => el.style.display = 'none');
+            } else {
+                box.classList.remove('mode-full');
+                document.querySelectorAll('.ess-only').forEach(el => el.style.display = 'flex'); // restore flex
+            }
+            calcola(); // Recalculate to refresh view
+        }
+
         function calcola() {
-            const ral = parseFloat(document.getElementById('ral').value) || 0;
-            const altri = parseFloat(document.getElementById('altri').value) || 0;
+            const val = (id) => parseFloat(document.getElementById(id).value) || 0;
+            const ral = val('ral');
+            const altri = val('altri');
             const complessivo = ral + altri;
 
             const figli = parseInt(document.getElementById('figli').value) || 0;
-            const sanita = parseFloat(document.getElementById('sanita').value) || 0;
-            const trasporti = parseFloat(document.getElementById('trasporti').value) || 0;
+            const sanita = val('sanita');
+
+            // In essential mode, these inputs are hidden but exist. We can still read them (default 0).
+            const trasporti = val('trasporti');
+            const mutuo = val('mutuo');
+            const edilizia = val('edilizia');
 
             const affittoSelect = document.getElementById('affitto');
             const affittoValore = affittoSelect.value;
-            const canoneAnnuo = parseFloat(document.getElementById('canone').value) || 0;
+            const canoneAnnuo = val('canone');
 
-            const mutuo = parseFloat(document.getElementById('mutuo').value) || 0;
-            const edilizia = parseFloat(document.getElementById('edilizia').value) || 0;
-
-            // Mostra/Nascondi campo canone
             document.getElementById('box-canone').style.display = (affittoValore === 'giovani') ? 'block' : 'none';
 
             const gap = document.getElementById('alert-gap');
@@ -353,28 +443,19 @@
 
             // 5. Affitto
             let detAffitto = 0;
-
             if (affittoValore === 'giovani') {
                 if (complessivo <= 15493.71) {
-                    // Minimo 991.60€, Massimo 2000€ (o 20% del canone)
                     let detGiovani = canoneAnnuo * 0.20;
                     detAffitto = Math.max(991.60, Math.min(2000, detGiovani));
-                    // Se il canone è 0, la detrazione è 0
                     if (canoneAnnuo === 0) detAffitto = 0;
                 }
             } else {
-                // Logica standard (importi fissi)
                 let importoFisso = parseFloat(affittoValore) || 0;
-
-                if (complessivo <= 15493) {
-                    detAffitto = importoFisso;
-                } else if (complessivo <= 30987) {
-                    detAffitto = importoFisso * 0.5;
-                }
+                if (complessivo <= 15493) detAffitto = importoFisso;
+                else if (complessivo <= 30987) detAffitto = importoFisso * 0.5;
             }
 
-            // 6. Altre Detrazioni (Mutuo + Edilizia)
-            // Mutuo: 19% su max 4000€
+            // 6. Altre
             let detMutuo = Math.min(mutuo, 4000) * 0.19;
             let detAltre = detMutuo + edilizia;
 
@@ -408,19 +489,31 @@
             }
 
             // Output UI
+            const fmt = (n) => Math.round(n).toLocaleString() + " €";
+
             document.getElementById('out-totale').innerText = complessivo.toLocaleString() + " €";
-            document.getElementById('out-irpef').innerText = Math.round(irpef).toLocaleString() + " €";
-            document.getElementById('out-det-lavoro').innerText = Math.round(detLavoro).toLocaleString() + " €";
-            document.getElementById('out-det-figli').innerText = Math.round(detFigli).toLocaleString() + " €";
-            document.getElementById('out-det-spese').innerText = Math.round(detSpese).toLocaleString() + " €";
-            document.getElementById('out-det-affitto').innerText = Math.round(detAffitto).toLocaleString() + " €";
-            document.getElementById('out-det-altre').innerText = Math.round(detAltre).toLocaleString() + " €";
-            document.getElementById('out-det-totale').innerText = Math.round(detTotali).toLocaleString() + " €";
-            document.getElementById('out-bonus').innerText = Math.round(bonus).toLocaleString() + " €";
+            document.getElementById('out-irpef').innerText = fmt(irpef);
+            document.getElementById('out-det-lavoro').innerText = fmt(detLavoro);
+
+            // Essential Mode Aggregate
+            let detFamigliaCasa = detFigli + detSpese + detAffitto + detAltre;
+            document.getElementById('out-det-famiglia-casa').innerText = fmt(detFamigliaCasa);
+
+            // Full Mode Details
+            document.getElementById('out-det-figli').innerText = fmt(detFigli);
+            // In Full mode, Spese includes Transport; in Essential it's just Sanità + (0 transport) effectively
+            document.getElementById('out-det-spese').innerText = fmt(detSpese);
+            document.getElementById('out-det-affitto').innerText = fmt(detAffitto);
+            document.getElementById('out-det-altre').innerText = fmt(detAltre);
+
+            document.getElementById('out-bonus').innerText = fmt(bonus);
 
             const badge = document.getElementById('badge');
             badge.innerText = bText; badge.style.background = bColor;
         }
+
+        // Init
+        toggleMode();
     </script>
 
 </body>

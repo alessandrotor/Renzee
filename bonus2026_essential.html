@@ -229,14 +229,13 @@
             <div class="section-title" style="border:none; font-size: 0.7rem; margin-top: 15px;">Dettaglio Detrazioni
             </div>
             <div class="line sub"><span>Lavoro Dipendente:</span> <span id="out-det-lavoro">0 €</span></div>
-            <div class="line sub"><span>Famiglia e Casa:</span> <span id="out-det-totale">0 €</span></div>
+            <div class="line sub"><span>Famiglia e Casa:</span> <span id="out-det-famiglia-casa">0 €</span></div>
 
             <div id="alert-gap" class="alert alert-gap"></div>
             <div id="alert-danger" class="alert alert-danger"></div>
 
             <div class="total-bonus"><span>BONUS ANNUO:</span> <span id="out-bonus">0 €</span></div>
         </div>
-
 
     </div>
 
@@ -344,7 +343,7 @@
             document.getElementById('out-det-lavoro').innerText = Math.round(detLavoro).toLocaleString() + " €";
             // Aggreghiamo tutte le "Altre" in una voce sola per pulizia
             let detFamigliaCasa = detFigli + detSpese + detAffitto + detAltre;
-            document.getElementById('out-det-totale').innerText = Math.round(detFamigliaCasa).toLocaleString() + " €";
+            document.getElementById('out-det-famiglia-casa').innerText = Math.round(detFamigliaCasa).toLocaleString() + " €";
 
             document.getElementById('out-bonus').innerText = Math.round(bonus).toLocaleString() + " €";
 
