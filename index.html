@@ -70,12 +70,26 @@
 
             .box {
                 padding: 20px 15px;
+                /* Mobile Reordering Logic */
+                display: flex;
+                flex-direction: column;
             }
 
+            /* Force Header to top */
             .header-row {
                 flex-direction: column;
                 gap: 10px;
                 margin-bottom: 15px;
+                order: -2;
+            }
+
+            /* Force Results to second place */
+            .res-box {
+                padding: 18px;
+                margin-top: 0;
+                margin-bottom: 25px;
+                /* Add space below instead of above */
+                order: -1;
             }
 
             h2 {
@@ -101,11 +115,6 @@
             select {
                 padding: 10px;
                 font-size: 0.95rem;
-            }
-
-            .res-box {
-                padding: 18px;
-                margin-top: 15px;
             }
 
             .line {
