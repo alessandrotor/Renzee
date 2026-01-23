@@ -54,7 +54,8 @@
             display: inline-block;
             font-size: 0.8rem;
             background: #e2e8f0;
-            color: #475569;
+            color: #334155;
+            /* Improved contrast from #475569 */
             padding: 2px 8px;
             border-radius: 6px;
             vertical-align: middle;
@@ -394,12 +395,12 @@
             <div class="section-title">Redditi</div>
             <div class="grid">
                 <div class="field">
-                    <label>RAL (Lavoro Dipendente) €</label>
-                    <input type="number" id="ral" placeholder="Es. 21000" oninput="calcola()">
+                    <label for="ral">RAL (Lavoro Dipendente) €</label>
+                    <input type="number" id="ral" name="ral" min="0" placeholder="Es. 21000" oninput="calcola()">
                 </div>
                 <div class="field">
-                    <label>Altri Redditi €</label>
-                    <input type="number" id="altri" value="0" oninput="calcola()">
+                    <label for="altri">Altri Redditi €</label>
+                    <input type="number" id="altri" name="altri" min="0" value="0" oninput="calcola()">
                 </div>
             </div>
         </div>
@@ -407,36 +408,36 @@
         <div class="section-title">Detrazioni</div>
         <div class="grid">
             <div class="field">
-                <label>Figli a Carico n°</label>
+                <label for="figli">Figli a Carico n°</label>
                 <div class="form-note adv-only">(es. età > 21 anni, con disabilità, ecc.)</div>
-                <input type="number" id="figli" value="0" oninput="calcola()">
+                <input type="number" id="figli" name="figli" min="0" value="0" oninput="calcola()">
             </div>
             <div class="field">
-                <label>Spese Sanitarie €</label>
-                <input type="number" id="sanita" value="0" oninput="calcola()">
+                <label for="sanita">Spese Sanitarie €</label>
+                <input type="number" id="sanita" name="sanita" min="0" value="0" oninput="calcola()">
             </div>
         </div>
 
         <!-- Extra row for Full Mode -->
         <div class="grid adv-only">
             <div class="field">
-                <label>Trasporti Pubblici €</label>
-                <input type="number" id="trasporti" value="0" oninput="calcola()">
+                <label for="trasporti">Trasporti Pubblici €</label>
+                <input type="number" id="trasporti" name="trasporti" min="0" value="0" oninput="calcola()">
             </div>
         </div>
 
         <div class="grid">
             <div class="field">
-                <label>Affitto</label>
-                <select id="affitto" onchange="calcola()">
+                <label for="affitto">Affitto</label>
+                <select id="affitto" name="affitto" onchange="calcola()">
                     <option value="0">Nessuno</option>
                     <option value="300">Libero / Cedolare (300€)</option>
                     <option value="495">Canone Concordato (495€)</option>
                     <option value="giovani">Giovani Under 31 (20% Canone)</option>
                 </select>
                 <div id="box-canone" style="display: none; margin-top: 15px;">
-                    <label>Canone Annuo €</label>
-                    <input type="number" id="canone" placeholder="Es. 6000" oninput="calcola()">
+                    <label for="canone">Canone Annuo €</label>
+                    <input type="number" id="canone" name="canone" min="0" placeholder="Es. 6000" oninput="calcola()">
                 </div>
             </div>
         </div>
@@ -444,14 +445,16 @@
         <div class="section-title adv-only">Altre Detrazioni (Ante 2022)</div>
         <div class="grid adv-only">
             <div class="field">
-                <label>Interessi Mutuo 1ª Casa €</label>
+                <label for="mutuo">Interessi Mutuo 1ª Casa €</label>
                 <div class="form-note">(stipulati entro il 31/12/2021)</div>
-                <input type="number" id="mutuo" value="0" placeholder="Es. 3000" oninput="calcola()">
+                <input type="number" id="mutuo" name="mutuo" min="0" value="0" placeholder="Es. 3000"
+                    oninput="calcola()">
             </div>
             <div class="field">
-                <label>Rata Detrazione Edilizia €</label>
+                <label for="edilizia">Rata Detrazione Edilizia €</label>
                 <div class="form-note">(spese sostenute entro il 2021)</div>
-                <input type="number" id="edilizia" value="0" placeholder="Es. 500" oninput="calcola()">
+                <input type="number" id="edilizia" name="edilizia" min="0" value="0" placeholder="Es. 500"
+                    oninput="calcola()">
             </div>
         </div>
 
