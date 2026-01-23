@@ -50,6 +50,19 @@
             text-align: left;
         }
 
+        .beta {
+            display: inline-block;
+            font-size: 0.8rem;
+            background: #e2e8f0;
+            color: #475569;
+            padding: 2px 8px;
+            border-radius: 6px;
+            vertical-align: middle;
+            margin-left: 8px;
+            font-weight: 600;
+            transform: translateY(-2px);
+        }
+
         @media (max-width: 500px) {
             .header-row {
                 flex-direction: column;
@@ -278,7 +291,7 @@
 
     <div class="box" id="main-box">
         <div class="header-row">
-            <h2>Simulatore Bonus 2026</h2>
+            <h2>Simulatore Bonus 2026 <span class="beta">Beta</span></h2>
             <div class="toggle-container">
                 <span>Essenziale</span>
                 <label class="switch">
