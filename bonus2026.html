@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulatore Bonus 2026</title>
     <style>
         :root {
@@ -47,7 +48,6 @@
             margin: 0;
             font-size: 1.6rem;
             text-align: left;
-            /* Align left to sit next to toggle */
         }
 
         @media (max-width: 500px) {
@@ -236,6 +236,18 @@
             color: #b91c1c;
         }
 
+        .alert-info {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
+        }
+
+        .alert-warning {
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            color: #9a3412;
+        }
+
         .total-bonus {
             font-weight: 800;
             font-size: 1.6rem;
@@ -258,13 +270,6 @@
 
         .mode-full .adv-field {
             display: flex;
-        }
-
-        /* For flex fields */
-
-        /* Specific tweaks for grid layout when inputs are hidden/shown */
-        .mode-full .adv-grid-item {
-            display: block;
         }
     </style>
 </head>
@@ -369,6 +374,7 @@
 
             <div id="alert-gap" class="alert alert-gap"></div>
             <div id="alert-danger" class="alert alert-danger"></div>
+            <div id="alert-info" class="alert alert-info"></div>
 
             <div class="total-bonus"><span>BONUS ANNUO:</span> <span id="out-bonus">0 €</span></div>
         </div>
@@ -412,13 +418,34 @@
 
             const gap = document.getElementById('alert-gap');
             const danger = document.getElementById('alert-danger');
+            const info = document.getElementById('alert-info');
             gap.style.display = "none";
             danger.style.display = "none";
+            info.style.display = "none";
 
             if (complessivo <= 0) {
                 document.getElementById('badge').style.background = "#64748b";
                 document.getElementById('badge').innerText = "In attesa dati";
                 return;
+            }
+
+            // Show remaining capacity
+            if (complessivo < 15000) {
+                let residuo = 15000 - complessivo;
+                info.style.display = "block";
+
+                if (residuo <= 1000) {
+                    info.className = "alert alert-warning";
+                    info.innerHTML = `⚠️ <b>Attenzione!</b> Sei molto vicino alla soglia dei 15.000€. Ti mancano solo <b>${residuo.toLocaleString()} €</b>.`;
+                } else {
+                    info.className = "alert alert-info";
+                    info.innerHTML = `💡 Puoi percepire altri <b>${residuo.toLocaleString()} €</b> prima di superare la soglia dei 15.000€ (per il Bonus Pieno).`;
+                }
+            } else if (complessivo < 28000) {
+                let residuo = 28000 - complessivo;
+                info.style.display = "block";
+                info.className = "alert alert-info";
+                info.innerHTML = `💡 Puoi percepire altri <b>${residuo.toLocaleString()} €</b> prima di superare la soglia dei 28.000€.`;
             }
 
             // 1. IRPEF
