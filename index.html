@@ -80,16 +80,24 @@
                 flex-direction: column;
                 gap: 10px;
                 margin-bottom: 15px;
-                order: -2;
+                order: -3;
+                /* 1st */
             }
 
-            /* Force Results to second place */
+            /* Force Redditi Inputs to second place */
+            .input-group-redditi {
+                order: -2;
+                /* 2nd */
+                margin-bottom: 20px;
+            }
+
+            /* Force Results to third place */
             .res-box {
                 padding: 18px;
                 margin-top: 0;
                 margin-bottom: 25px;
-                /* Add space below instead of above */
                 order: -1;
+                /* 3rd */
             }
 
             h2 {
@@ -364,15 +372,17 @@
             </div>
         </div>
 
-        <div class="section-title">Redditi</div>
-        <div class="grid">
-            <div class="field">
-                <label>RAL (Lavoro Dipendente) €</label>
-                <input type="number" id="ral" placeholder="Es. 21000" oninput="calcola()">
-            </div>
-            <div class="field">
-                <label>Altri Redditi €</label>
-                <input type="number" id="altri" value="0" oninput="calcola()">
+        <div class="input-group-redditi">
+            <div class="section-title">Redditi</div>
+            <div class="grid">
+                <div class="field">
+                    <label>RAL (Lavoro Dipendente) €</label>
+                    <input type="number" id="ral" placeholder="Es. 21000" oninput="calcola()">
+                </div>
+                <div class="field">
+                    <label>Altri Redditi €</label>
+                    <input type="number" id="altri" value="0" oninput="calcola()">
+                </div>
             </div>
         </div>
 
