@@ -65,11 +65,12 @@
 
         @media (max-width: 500px) {
             body {
-                padding: 15px 10px;
+                padding: 10px 5px;
+                /* Tighter padding */
             }
 
             .box {
-                padding: 20px 15px;
+                padding: 15px 12px;
                 /* Mobile Reordering Logic */
                 display: flex;
                 flex-direction: column;
@@ -78,56 +79,66 @@
             /* Force Header to top */
             .header-row {
                 flex-direction: column;
-                gap: 10px;
-                margin-bottom: 15px;
+                gap: 5px;
+                /* Reduced gap */
+                margin-bottom: 10px;
                 order: -3;
                 /* 1st */
+                margin-top: -5px;
             }
 
             /* Force Redditi Inputs to second place */
             .input-group-redditi {
                 order: -2;
                 /* 2nd */
-                margin-bottom: 20px;
+                margin-bottom: 5px;
+                /* Much reduced margin */
             }
 
             /* Force Results to third place */
             .res-box {
-                padding: 18px;
-                margin-top: 0;
-                margin-bottom: 25px;
+                padding: 12px;
+                margin-top: 5px;
+                margin-bottom: 15px;
+                /* Reduced margin */
                 order: -1;
                 /* 3rd */
+                border-radius: 12px;
             }
 
             h2 {
                 text-align: center;
-                font-size: 1.3rem;
+                font-size: 1.2rem;
+                /* Compact title */
             }
 
             .section-title {
-                margin: 15px 0 10px;
+                margin: 10px 0 5px;
                 font-size: 0.7rem;
             }
 
             .grid {
-                gap: 12px;
-                margin-bottom: 8px;
+                gap: 8px;
+                /* Compact grid */
+                margin-bottom: 5px;
             }
 
             .field {
-                margin-bottom: 10px;
+                margin-bottom: 8px;
+                /* Compact fields */
             }
 
             input,
             select {
-                padding: 10px;
+                padding: 8px;
+                /* Slimmer inputs */
                 font-size: 0.95rem;
             }
 
             .line {
                 font-size: 0.85rem;
-                margin-bottom: 8px;
+                margin-bottom: 4px;
+                /* Tighter lines */
             }
 
             .line.sub {
@@ -135,12 +146,16 @@
             }
 
             .total-bonus {
-                font-size: 1.3rem;
+                font-size: 1.2rem;
+                /* Smaller total */
+                margin-top: 10px;
+                padding-top: 10px;
             }
 
             .alert {
-                padding: 12px;
+                padding: 10px;
                 font-size: 0.8rem;
+                margin-top: 10px;
             }
         }
 
