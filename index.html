@@ -65,97 +65,100 @@
 
         @media (max-width: 500px) {
             body {
-                padding: 10px 5px;
-                /* Tighter padding */
+                padding: 5px;
+                /* Minimal padding */
             }
 
             .box {
-                padding: 15px 12px;
-                /* Mobile Reordering Logic */
+                padding: 12px 10px;
+                /* Minimal box padding */
                 display: flex;
                 flex-direction: column;
             }
 
-            /* Force Header to top */
+            /* 1. Header */
             .header-row {
                 flex-direction: column;
-                gap: 5px;
-                /* Reduced gap */
-                margin-bottom: 10px;
-                order: -3;
-                /* 1st */
-                margin-top: -5px;
-            }
-
-            /* Force Redditi Inputs to second place */
-            .input-group-redditi {
-                order: -2;
-                /* 2nd */
+                gap: 2px;
                 margin-bottom: 5px;
-                /* Much reduced margin */
-            }
-
-            /* Force Results to third place */
-            .res-box {
-                padding: 12px;
-                margin-top: 5px;
-                margin-bottom: 15px;
-                /* Reduced margin */
-                order: -1;
-                /* 3rd */
-                border-radius: 12px;
+                order: -3;
+                margin-top: -5px;
             }
 
             h2 {
                 text-align: center;
-                font-size: 1.2rem;
-                /* Compact title */
+                font-size: 1.1rem;
+                /* Smaller title */
+                margin-bottom: 2px;
             }
 
+            /* 2. Redditi Inputs (Side-by-Side) */
+            .input-group-redditi {
+                order: -2;
+                margin-bottom: 5px;
+            }
+
+            .input-group-redditi .grid {
+                grid-template-columns: 1fr 1fr;
+                /* 2 Columns! */
+                gap: 8px;
+            }
+
+            .input-group-redditi .field {
+                margin-bottom: 0;
+                /* Remove internal margin */
+            }
+
+            /* 3. Results */
+            .res-box {
+                padding: 10px;
+                margin-top: 2px;
+                margin-bottom: 15px;
+                order: -1;
+                border-radius: 10px;
+            }
+
+            /* General Compact Styles */
             .section-title {
-                margin: 10px 0 5px;
-                font-size: 0.7rem;
+                margin: 8px 0 4px;
+                font-size: 0.65rem;
             }
 
             .grid {
                 gap: 8px;
-                /* Compact grid */
                 margin-bottom: 5px;
             }
 
             .field {
                 margin-bottom: 8px;
-                /* Compact fields */
             }
 
             input,
             select {
-                padding: 8px;
-                /* Slimmer inputs */
-                font-size: 0.95rem;
+                padding: 6px;
+                /* Ultra slim inputs */
+                font-size: 0.9rem;
             }
 
             .line {
-                font-size: 0.85rem;
-                margin-bottom: 4px;
-                /* Tighter lines */
+                font-size: 0.8rem;
+                margin-bottom: 2px;
             }
 
             .line.sub {
-                font-size: 0.8rem;
+                font-size: 0.75rem;
             }
 
             .total-bonus {
-                font-size: 1.2rem;
-                /* Smaller total */
-                margin-top: 10px;
-                padding-top: 10px;
+                font-size: 1.1rem;
+                margin-top: 8px;
+                padding-top: 8px;
             }
 
             .alert {
-                padding: 10px;
-                font-size: 0.8rem;
-                margin-top: 10px;
+                padding: 8px;
+                font-size: 0.75rem;
+                margin-top: 8px;
             }
         }
 
