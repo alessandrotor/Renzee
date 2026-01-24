@@ -60,22 +60,26 @@ h2 {
     background: #fee2e2;
     border: 1px solid #fecaca;
     color: #b91c1c;
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-size: 0.7rem;
+    font-weight: 500;
     cursor: pointer;
-    padding: 4px 10px;
+    padding: 3px 8px;
     border-radius: 6px;
     transition: all 0.2s;
+    opacity: 0.5;
+    margin-left: 8px;
 }
 
 .reset-btn:hover {
     background: #fecaca;
     border-color: #fca5a5;
     color: #991b1b;
+    opacity: 0.8;
 }
 
 .reset-btn:active {
     transform: scale(0.95);
+    opacity: 1;
 }
 
 @media (max-width: 500px) {
