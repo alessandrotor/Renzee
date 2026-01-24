@@ -25,14 +25,11 @@
     <div class="box" id="main-box">
         <div class="header-row">
             <h2>Simulatore Bonus 2026 <span class="beta">Beta</span></h2>
-            <div class="toggle-container">
-                <span>Essenziale</span>
-                <label class="switch" aria-label="Seleziona modalità visualizzazione">
-                    <input type="checkbox" id="mode-toggle" role="switch" aria-checked="false"
-                        aria-label="Passa alla modalità completa">
-                    <span class="slider"></span>
-                </label>
-                <span>Completo</span>
+            <div class="toggle-container" id="toggle-container">
+                <div class="toggle-bg"></div>
+                <div class="toggle-option active" id="opt-ess">Essenziale</div>
+                <div class="toggle-option" id="opt-full">Completo</div>
+                <input type="checkbox" id="mode-toggle" class="switch">
             </div>
         </div>
         <div class="input-group-redditi">
