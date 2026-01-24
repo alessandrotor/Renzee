@@ -292,6 +292,7 @@ function calcola() {
 
 // Event listeners setup
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('🚀 Calculator.js loaded and DOMContentLoaded fired');
     // Load saved data FIRST
     loadFormData();
 
@@ -306,7 +307,16 @@ document.addEventListener('DOMContentLoaded', () => {
     inputIds.forEach(id => {
         const element = document.getElementById(id);
         if (element) {
+            // Block 'e', '+', '-' keys in number inputs
+            element.addEventListener('keydown', (e) => {
+                if (e.key === 'e' || e.key === 'E' || e.key === '+' || e.key === '-') {
+                    e.preventDefault();
+                }
+            });
+
             element.addEventListener('input', () => {
+                // Sanitize input value (for mobile keyboards that bypass keydown)
+                element.value = element.value.replace(/[eE+\-]/g, '');
                 calcola();
                 debouncedSave(); // Save after 500ms of inactivity
             });
