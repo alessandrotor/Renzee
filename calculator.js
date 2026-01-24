@@ -9,13 +9,13 @@ const CONSTANTS = {
     SOGLIA_AFFITTO_RIDOTTO: 30987,
     SOGLIA_FIGLI: 95000,
     SOGLIA_AVVISO_VICINO: 1000,
-    
+
     // Tax rates
     ALIQUOTA_IRPEF_BASSA: 0.23,
     ALIQUOTA_IRPEF_ALTA: 0.35,
     ALIQUOTA_DETRAZIONE: 0.19,
     ALIQUOTA_AFFITTO_GIOVANI: 0.20,
-    
+
     // Deduction amounts
     DETRAZIONE_LAVORO_BASE: 1955,
     DETRAZIONE_LAVORO_RIDOTTA: 1910,
@@ -27,10 +27,10 @@ const CONSTANTS = {
     DETRAZIONE_MUTUO_MAX: 4000,
     DETRAZIONE_AFFITTO_GIOVANI_MIN: 991.60,
     DETRAZIONE_AFFITTO_GIOVANI_MAX: 2000,
-    
+
     // Bonus
     BONUS_MASSIMO: 1200,
-    
+
     // Colors
     COLOR_SLATE: '#64748b',
     COLOR_GREEN: '#10b981',
@@ -39,8 +39,12 @@ const CONSTANTS = {
 };
 
 function toggleMode() {
-    const isFull = document.getElementById('mode-toggle').checked;
+    const toggle = document.getElementById('mode-toggle');
+    const isFull = toggle.checked;
     const box = document.getElementById('main-box');
+
+    // Sync ARIA attribute for screen readers
+    toggle.setAttribute('aria-checked', isFull.toString());
 
     if (isFull) {
         box.classList.add('mode-full');
@@ -61,12 +65,12 @@ function calcola() {
     const val = (id) => {
         const element = document.getElementById(id);
         const value = parseFloat(element.value) || 0;
-        
+
         // Mark as invalid if negative
         if (element.value && value < 0) {
             element.classList.add('invalid');
         }
-        
+
         return Math.max(0, value);
     };
 
@@ -119,8 +123,8 @@ function calcola() {
     }
 
     // 1. IRPEF
-    let irpef = (complessivo <= CONSTANTS.SOGLIA_IRPEF_ALTA) 
-        ? (complessivo * CONSTANTS.ALIQUOTA_IRPEF_BASSA) 
+    let irpef = (complessivo <= CONSTANTS.SOGLIA_IRPEF_ALTA)
+        ? (complessivo * CONSTANTS.ALIQUOTA_IRPEF_BASSA)
         : (CONSTANTS.SOGLIA_IRPEF_ALTA * CONSTANTS.ALIQUOTA_IRPEF_BASSA + (complessivo - CONSTANTS.SOGLIA_IRPEF_ALTA) * CONSTANTS.ALIQUOTA_IRPEF_ALTA);
 
     // 2. Detrazione Lavoro
@@ -141,7 +145,7 @@ function calcola() {
     }
 
     // 4. Detrazione Spese
-    let detSpese = Math.max(0, (sanita - CONSTANTS.DETRAZIONE_SANITA_FRANCHIGIA) * CONSTANTS.ALIQUOTA_DETRAZIONE) 
+    let detSpese = Math.max(0, (sanita - CONSTANTS.DETRAZIONE_SANITA_FRANCHIGIA) * CONSTANTS.ALIQUOTA_DETRAZIONE)
         + (Math.min(trasporti, CONSTANTS.DETRAZIONE_TRASPORTI_MAX) * CONSTANTS.ALIQUOTA_DETRAZIONE);
 
     // 5. Affitto
@@ -227,7 +231,7 @@ function calcola() {
 document.addEventListener('DOMContentLoaded', () => {
     // Mode toggle
     document.getElementById('mode-toggle').addEventListener('change', toggleMode);
-    
+
     // Input listeners
     const inputIds = ['ral', 'altri', 'figli', 'sanita', 'trasporti', 'canone', 'mutuo', 'edilizia'];
     inputIds.forEach(id => {
@@ -236,10 +240,10 @@ document.addEventListener('DOMContentLoaded', () => {
             element.addEventListener('input', calcola);
         }
     });
-    
+
     // Select listener
     document.getElementById('affitto').addEventListener('change', calcola);
-    
+
     // Initialize
     toggleMode();
 });

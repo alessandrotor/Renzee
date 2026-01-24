@@ -5,6 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulatore Bonus 2026</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description"
+        content="Simulatore gratuito Bonus 2026 - Calcola il tuo bonus fiscale in base a reddito e detrazioni. Strumento ufficioso per il calcolo del bonus IRPEF 2026.">
+    <meta name="keywords" content="bonus 2026, simulatore bonus, bonus fiscale, irpef, detrazioni, calcolo bonus">
+    <meta name="author" content="Alessandro">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Simulatore Bonus 2026">
+    <meta property="og:description" content="Calcola il tuo bonus fiscale 2026 in base a reddito e detrazioni">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Simulatore Bonus 2026">
+    <meta name="twitter:description" content="Calcola il tuo bonus fiscale 2026 in base a reddito e detrazioni">
+
     <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -15,8 +32,9 @@
             <h2>Simulatore Bonus 2026 <span class="beta">Beta</span></h2>
             <div class="toggle-container">
                 <span>Essenziale</span>
-                <label class="switch">
-                    <input type="checkbox" id="mode-toggle">
+                <label class="switch" aria-label="Seleziona modalità visualizzazione">
+                    <input type="checkbox" id="mode-toggle" role="switch" aria-checked="false"
+                        aria-label="Passa alla modalità completa">
                     <span class="slider"></span>
                 </label>
                 <span>Completo</span>
@@ -88,7 +106,7 @@
             </div>
         </div>
 
-        <div class="res-box">
+        <div class="res-box" role="region" aria-label="Risultati calcolo bonus" aria-live="polite">
             <div id="badge" class="badge">In attesa dati</div>
 
             <div class="line"><span>Reddito Complessivo:</span> <span id="out-totale">0 €</span></div>
@@ -108,9 +126,9 @@
             <div class="line sub adv-only"><span>Affitto Spettante:</span> <span id="out-det-affitto">0 €</span></div>
             <div class="line sub adv-only"><span>Mutuo ed Edilizia:</span> <span id="out-det-altre">0 €</span></div>
 
-            <div id="alert-gap" class="alert alert-gap"></div>
-            <div id="alert-danger" class="alert alert-danger"></div>
-            <div id="alert-info" class="alert alert-info"></div>
+            <div id="alert-gap" class="alert alert-gap" role="alert"></div>
+            <div id="alert-danger" class="alert alert-danger" role="alert"></div>
+            <div id="alert-info" class="alert alert-info" role="alert"></div>
 
             <div class="total-bonus"><span>BONUS ANNUO:</span> <span id="out-bonus">0 €</span></div>
         </div>
