@@ -314,6 +314,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             element.addEventListener('input', () => {
+                // Sanitize input value (for mobile keyboards that bypass keydown)
+                element.value = element.value.replace(/[eE+\-]/g, '');
                 calcola();
                 debouncedSave(); // Save after 500ms of inactivity
             });
