@@ -306,6 +306,13 @@ document.addEventListener('DOMContentLoaded', () => {
     inputIds.forEach(id => {
         const element = document.getElementById(id);
         if (element) {
+            // Block 'e', '+', '-' keys in number inputs
+            element.addEventListener('keydown', (e) => {
+                if (e.key === 'e' || e.key === 'E' || e.key === '+' || e.key === '-') {
+                    e.preventDefault();
+                }
+            });
+
             element.addEventListener('input', () => {
                 calcola();
                 debouncedSave(); // Save after 500ms of inactivity
