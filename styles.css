@@ -57,19 +57,21 @@ h2 {
 }
 
 .reset-btn {
-    background: none;
-    border: none;
-    font-size: 1.2rem;
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+    color: #b91c1c;
+    font-size: 0.75rem;
+    font-weight: 600;
     cursor: pointer;
-    padding: 4px 8px;
+    padding: 4px 10px;
     border-radius: 6px;
-    transition: background-color 0.2s;
-    opacity: 0.6;
+    transition: all 0.2s;
 }
 
 .reset-btn:hover {
-    background-color: #fee2e2;
-    opacity: 1;
+    background: #fecaca;
+    border-color: #fca5a5;
+    color: #991b1b;
 }
 
 .reset-btn:active {
