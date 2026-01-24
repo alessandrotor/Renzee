@@ -66,7 +66,7 @@ function loadFormData() {
 
     try {
         const formData = JSON.parse(saved);
-
+        console.log('🔄 Dati trovati in localStorage:', formData);
         // Restore input values
         Object.keys(formData).forEach(key => {
             if (key === 'modeToggle') {
@@ -78,12 +78,13 @@ function loadFormData() {
                 }
             }
         });
-
+        console.log('✅ Dati ripristinati nel form');
         return true;
     } catch (e) {
-        console.error('Errore caricamento dati salvati:', e);
+        console.error('❌ Errore caricamento dati salvati:', e);
         return false;
     }
+
 }
 
 // Debounced save (avoid saving on every keystroke)
