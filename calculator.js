@@ -292,6 +292,7 @@ function calcola() {
 
 // Event listeners setup
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('🚀 Calculator.js loaded and DOMContentLoaded fired');
     // Load saved data FIRST
     loadFormData();
 
