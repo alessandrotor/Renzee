@@ -1,0 +1,371 @@
+// Tax calculation constants
+const CONSTANTS = {
+    // Income thresholds
+    SOGLIA_BONUS_PIENO: 15000,
+    SOGLIA_BONUS_MAX: 28000,
+    SOGLIA_IRPEF_ALTA: 28000,
+    SOGLIA_AFFITTO_GIOVANI: 15493.71,
+    SOGLIA_AFFITTO_PIENO: 15493,
+    SOGLIA_AFFITTO_RIDOTTO: 30987,
+    SOGLIA_FIGLI: 95000,
+    SOGLIA_AVVISO_VICINO: 1000,
+
+    // Tax rates
+    ALIQUOTA_IRPEF_BASSA: 0.23,
+    ALIQUOTA_IRPEF_ALTA: 0.35,
+    ALIQUOTA_DETRAZIONE: 0.19,
+    ALIQUOTA_AFFITTO_GIOVANI: 0.20,
+
+    // Deduction amounts
+    DETRAZIONE_LAVORO_BASE: 1955,
+    DETRAZIONE_LAVORO_RIDOTTA: 1910,
+    DETRAZIONE_LAVORO_EXTRA: 1190,
+    DETRAZIONE_LAVORO_RANGE: 13000,
+    DETRAZIONE_FIGLI_PER_FIGLIO: 950,
+    DETRAZIONE_SANITA_FRANCHIGIA: 129.11,
+    DETRAZIONE_TRASPORTI_MAX: 250,
+    DETRAZIONE_MUTUO_MAX: 4000,
+    DETRAZIONE_AFFITTO_GIOVANI_MIN: 991.60,
+    DETRAZIONE_AFFITTO_GIOVANI_MAX: 2000,
+
+    // Bonus
+    BONUS_MASSIMO: 1200,
+
+    // Colors
+    COLOR_SLATE: '#64748b',
+    COLOR_GREEN: '#10b981',
+    COLOR_ORANGE: '#f59e0b',
+    COLOR_RED: '#ef4444'
+};
+
+// LocalStorage functions
+function saveFormData() {
+    const formData = {
+        ral: document.getElementById('ral').value,
+        altri: document.getElementById('altri').value,
+        figli: document.getElementById('figli').value,
+        sanita: document.getElementById('sanita').value,
+        trasporti: document.getElementById('trasporti').value,
+        mutuo: document.getElementById('mutuo').value,
+        edilizia: document.getElementById('edilizia').value,
+        affitto: document.getElementById('affitto').value,
+        canone: document.getElementById('canone').value,
+        modeToggle: document.getElementById('mode-toggle').checked
+    };
+
+    try {
+        localStorage.setItem('bonusSimulatorData', JSON.stringify(formData));
+    } catch (e) {
+        console.error('Errore salvataggio dati:', e);
+    }
+}
+
+function loadFormData() {
+    const saved = localStorage.getItem('bonusSimulatorData');
+    if (!saved) return false;
+
+    try {
+        const formData = JSON.parse(saved);
+        // Restore input values
+        Object.keys(formData).forEach(key => {
+            if (key === 'modeToggle') {
+                document.getElementById('mode-toggle').checked = formData[key];
+            } else {
+                const element = document.getElementById(key);
+                if (element && formData[key] !== undefined) {
+                    element.value = formData[key];
+                }
+            }
+        });
+        return true;
+    } catch (e) {
+        console.error('❌ Errore caricamento dati salvati:', e);
+        return false;
+    }
+
+}
+
+// Debounced save
+let saveTimeout;
+function debouncedSave() {
+    clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(saveFormData, 500);
+}
+
+function clearSavedData() {
+    if (confirm('Vuoi cancellare tutti i dati salvati e ricominciare da capo?')) {
+        localStorage.removeItem('bonusSimulatorData');
+        location.reload();
+    }
+}
+
+function toggleMode() {
+    const toggle = document.getElementById('mode-toggle');
+    const isFull = toggle.checked;
+    const box = document.getElementById('main-box');
+
+    // Visual updates for new switch
+    const optEss = document.getElementById('opt-ess');
+    const optFull = document.getElementById('opt-full');
+
+    if (isFull) {
+        box.classList.add('mode-full');
+        document.querySelectorAll('.ess-only').forEach(el => el.style.display = 'none');
+        if (optEss) optEss.classList.remove('active');
+        if (optFull) optFull.classList.add('active');
+    } else {
+        box.classList.remove('mode-full');
+        document.querySelectorAll('.ess-only').forEach(el => el.style.display = 'flex');
+        if (optEss) optEss.classList.add('active');
+        if (optFull) optFull.classList.remove('active');
+    }
+    calcola();
+}
+
+function calcola() {
+    // Clear all invalid states first
+    document.querySelectorAll('input[type="number"]').forEach(input => {
+        input.classList.remove('invalid');
+    });
+
+    const val = (id) => {
+        const element = document.getElementById(id);
+        const value = parseFloat(element.value) || 0;
+
+        // Mark as invalid if negative
+        if (element.value && value < 0) {
+            element.classList.add('invalid');
+        }
+
+        return Math.max(0, value);
+    };
+
+    const ral = val('ral');
+    const altri = val('altri');
+    const complessivo = ral + altri;
+
+    const figli = parseInt(document.getElementById('figli').value) || 0;
+    const sanita = val('sanita');
+    const trasporti = val('trasporti');
+    const mutuo = val('mutuo');
+    const edilizia = val('edilizia');
+
+    const affittoSelect = document.getElementById('affitto');
+    const affittoValore = affittoSelect.value;
+    const canoneAnnuo = val('canone');
+
+    document.getElementById('box-canone').style.display = (affittoValore === 'giovani') ? 'block' : 'none';
+
+    const gap = document.getElementById('alert-gap');
+    const danger = document.getElementById('alert-danger');
+    const info = document.getElementById('alert-info');
+    gap.style.display = "none";
+    danger.style.display = "none";
+    info.style.display = "none";
+
+    if (complessivo <= 0) {
+        document.getElementById('badge').style.background = CONSTANTS.COLOR_SLATE;
+        document.getElementById('badge').innerText = "In attesa dati";
+        // Reset outputs
+        document.getElementById('out-totale').innerText = "0 €";
+        document.getElementById('out-irpef').innerText = "0 €";
+        document.getElementById('out-det-lavoro').innerText = "0 €";
+        document.getElementById('out-det-famiglia-casa').innerText = "0 €";
+        document.getElementById('out-bonus').innerText = "0 €";
+        return;
+    }
+
+    // Show remaining capacity
+    if (complessivo < CONSTANTS.SOGLIA_BONUS_PIENO) {
+        let residuo = CONSTANTS.SOGLIA_BONUS_PIENO - complessivo;
+        info.style.display = "block";
+
+        if (residuo <= CONSTANTS.SOGLIA_AVVISO_VICINO) {
+            info.className = "alert alert-warning";
+            info.innerHTML = `⚠️ <b>Attenzione!</b> Sei molto vicino alla soglia dei ${CONSTANTS.SOGLIA_BONUS_PIENO.toLocaleString()}€. Ti mancano solo <b>${residuo.toLocaleString()} €</b>.`;
+        } else {
+            info.className = "alert alert-info";
+            info.innerHTML = `💡 Puoi percepire altri <b>${residuo.toLocaleString()} €</b> prima di superare la soglia dei ${CONSTANTS.SOGLIA_BONUS_PIENO.toLocaleString()}€ (per il Bonus Pieno).`;
+        }
+    } else if (complessivo < CONSTANTS.SOGLIA_BONUS_MAX) {
+        let residuo = CONSTANTS.SOGLIA_BONUS_MAX - complessivo;
+        info.style.display = "block";
+        info.className = "alert alert-info";
+        info.innerHTML = `💡 Puoi percepire altri <b>${residuo.toLocaleString()} €</b> prima di superare la soglia dei ${CONSTANTS.SOGLIA_BONUS_MAX.toLocaleString()}€.`;
+    }
+
+    // 1. IRPEF
+    let irpef = (complessivo <= CONSTANTS.SOGLIA_IRPEF_ALTA)
+        ? (complessivo * CONSTANTS.ALIQUOTA_IRPEF_BASSA)
+        : (CONSTANTS.SOGLIA_IRPEF_ALTA * CONSTANTS.ALIQUOTA_IRPEF_BASSA + (complessivo - CONSTANTS.SOGLIA_IRPEF_ALTA) * CONSTANTS.ALIQUOTA_IRPEF_ALTA);
+
+    // 2. Detrazione Lavoro
+    let detLavoro = 0;
+    if (ral > 0) {
+        if (complessivo <= CONSTANTS.SOGLIA_BONUS_PIENO) {
+            detLavoro = CONSTANTS.DETRAZIONE_LAVORO_BASE;
+        } else if (complessivo <= CONSTANTS.SOGLIA_BONUS_MAX) {
+            detLavoro = CONSTANTS.DETRAZIONE_LAVORO_RIDOTTA + CONSTANTS.DETRAZIONE_LAVORO_EXTRA * ((CONSTANTS.SOGLIA_BONUS_MAX - complessivo) / CONSTANTS.DETRAZIONE_LAVORO_RANGE);
+        }
+    }
+
+    // 3. Detrazione Figli
+    let detFigli = 0;
+    if (figli > 0) {
+        detFigli = (figli * CONSTANTS.DETRAZIONE_FIGLI_PER_FIGLIO) * ((CONSTANTS.SOGLIA_FIGLI - complessivo) / CONSTANTS.SOGLIA_FIGLI);
+        if (detFigli < 0) detFigli = 0;
+    }
+
+    // 4. Detrazione Spese
+    let detSpese = Math.max(0, (sanita - CONSTANTS.DETRAZIONE_SANITA_FRANCHIGIA) * CONSTANTS.ALIQUOTA_DETRAZIONE)
+        + (Math.min(trasporti, CONSTANTS.DETRAZIONE_TRASPORTI_MAX) * CONSTANTS.ALIQUOTA_DETRAZIONE);
+
+    // 5. Affitto
+    let detAffitto = 0;
+    if (affittoValore === 'giovani') {
+        if (complessivo <= CONSTANTS.SOGLIA_AFFITTO_GIOVANI) {
+            let detGiovani = canoneAnnuo * CONSTANTS.ALIQUOTA_AFFITTO_GIOVANI;
+            detAffitto = Math.max(CONSTANTS.DETRAZIONE_AFFITTO_GIOVANI_MIN, Math.min(CONSTANTS.DETRAZIONE_AFFITTO_GIOVANI_MAX, detGiovani));
+            if (canoneAnnuo === 0) detAffitto = 0;
+        }
+    } else {
+        let importoFisso = parseFloat(affittoValore) || 0;
+        if (complessivo <= CONSTANTS.SOGLIA_AFFITTO_PIENO) {
+            detAffitto = importoFisso;
+        } else if (complessivo <= CONSTANTS.SOGLIA_AFFITTO_RIDOTTO) {
+            detAffitto = importoFisso * 0.5;
+        }
+    }
+
+    // 6. Altre
+    let detMutuo = Math.min(mutuo, CONSTANTS.DETRAZIONE_MUTUO_MAX) * CONSTANTS.ALIQUOTA_DETRAZIONE;
+    let detAltre = detMutuo + edilizia;
+
+    let detTotali = detLavoro + detFigli + detSpese + detAffitto + detAltre;
+
+    // 7. Bonus
+    let bonus = 0;
+    let bText = "Non Spettante";
+    let bColor = CONSTANTS.COLOR_RED;
+
+    if (complessivo > CONSTANTS.SOGLIA_BONUS_MAX) {
+        danger.style.display = "block";
+        danger.innerHTML = `🚨 <b>Soglia Superata!</b> Reddito oltre i ${CONSTANTS.SOGLIA_BONUS_MAX.toLocaleString()}€. Il bonus non spetta.`;
+        bText = "Soglia Superata";
+    } else if (complessivo <= CONSTANTS.SOGLIA_BONUS_PIENO) {
+        if (irpef > detLavoro) {
+            bonus = CONSTANTS.BONUS_MASSIMO;
+            bText = "Bonus Pieno";
+            bColor = CONSTANTS.COLOR_GREEN;
+        } else {
+            bText = "Incapiente";
+            bColor = CONSTANTS.COLOR_ORANGE;
+        }
+    } else {
+        let diff = detTotali - irpef;
+        bonus = Math.min(CONSTANTS.BONUS_MASSIMO, Math.max(0, diff));
+        if (bonus > 0) {
+            bText = "Bonus Parziale";
+            bColor = CONSTANTS.COLOR_GREEN;
+        } else {
+            bText = "Nessun Bonus";
+            bColor = CONSTANTS.COLOR_ORANGE;
+            gap.style.display = "block";
+            gap.innerHTML = `⚠️ <b>Ti mancano ${Math.round(irpef - detTotali)}€</b> di detrazioni per sbloccarlo.`;
+        }
+    }
+
+    // Output UI
+    const fmt = (n) => Math.round(n).toLocaleString() + " €";
+
+    document.getElementById('out-totale').innerText = complessivo.toLocaleString() + " €";
+    document.getElementById('out-irpef').innerText = fmt(irpef);
+    document.getElementById('out-det-lavoro').innerText = fmt(detLavoro);
+
+    // Essential Mode Aggregate
+    let detFamigliaCasa = detFigli + detSpese + detAffitto + detAltre;
+    document.getElementById('out-det-famiglia-casa').innerText = fmt(detFamigliaCasa);
+
+    // Full Mode Details
+    document.getElementById('out-det-figli').innerText = fmt(detFigli);
+    document.getElementById('out-det-spese').innerText = fmt(detSpese);
+    document.getElementById('out-det-affitto').innerText = fmt(detAffitto);
+    document.getElementById('out-det-altre').innerText = fmt(detAltre);
+
+    document.getElementById('out-bonus').innerText = fmt(bonus);
+
+    const badge = document.getElementById('badge');
+    badge.innerText = bText;
+    badge.style.background = bColor;
+}
+
+// Event listeners setup
+document.addEventListener('DOMContentLoaded', () => {
+    // Load saved data FIRST
+    loadFormData();
+
+    // Mode toggle
+    const toggle = document.getElementById('mode-toggle');
+    const toggleFunc = () => {
+        toggleMode();
+        saveFormData();
+    };
+
+    if (toggle) {
+        toggle.addEventListener('change', toggleFunc);
+    }
+
+    // Add click listeners to custom options
+    const optEss = document.getElementById('opt-ess');
+    const optFull = document.getElementById('opt-full');
+
+    if (optEss) {
+        optEss.addEventListener('click', () => {
+            if (toggle) toggle.checked = false;
+            toggleFunc();
+        });
+    }
+
+    if (optFull) {
+        optFull.addEventListener('click', () => {
+            if (toggle) toggle.checked = true;
+            toggleFunc();
+        });
+    }
+
+    // Input listeners
+    const inputIds = ['ral', 'altri', 'figli', 'sanita', 'trasporti', 'canone', 'mutuo', 'edilizia'];
+    inputIds.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            // Block 'e', '+', '-' keys in number inputs
+            element.addEventListener('keydown', (e) => {
+                if (e.key === 'e' || e.key === 'E' || e.key === '+' || e.key === '-') {
+                    e.preventDefault();
+                }
+            });
+
+            element.addEventListener('input', () => {
+                // FIXED: REMOVED aggressive sanitization that broke typing
+                calcola();
+                debouncedSave();
+            });
+        }
+    });
+
+    const affittoEl = document.getElementById('affitto');
+    if (affittoEl) {
+        affittoEl.addEventListener('change', () => {
+            calcola();
+            saveFormData();
+        });
+    }
+
+    const resetBtn = document.getElementById('reset-btn');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', clearSavedData);
+    }
+
+    window.addEventListener('beforeunload', saveFormData);
+    toggleMode();
+});

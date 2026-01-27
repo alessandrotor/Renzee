@@ -1,0 +1,460 @@
+:root {
+    --bg-color: #f3f6f8;
+    /* Light gray/white background like mockup */
+    --card-bg: #ffffff;
+    --text-main: #1f2937;
+    --text-secondary: #6b7280;
+    --primary-blue: #0066ff;
+    /* Bright blue from mockup */
+    --risk-green: #10b981;
+    --risk-yellow: #fbbf24;
+    --risk-orange: #f97316;
+    --risk-red: #ef4444;
+    --danger-text: #dc2626;
+    --radius-lg: 20px;
+    --radius-md: 16px;
+    --radius-sm: 8px;
+    --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    margin: 0;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    width: 100%;
+    max-width: 1000px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* --- Input Section (Collapsible/Simple) --- */
+.input-section {
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    padding: 12px;
+    box-shadow: var(--shadow-soft);
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
+    display: flex;
+    flex-direction: column;
+    align-self: start;
+    border-left: 6px solid var(--primary-blue);
+}
+
+.input-section .card-header {
+    color: var(--primary-blue);
+}
+
+/* --- Unified Card Header Style --- */
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.card-header h4 {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-main);
+}
+
+.card-header svg {
+    flex-shrink: 0;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+}
+
+input,
+select {
+    padding: 10px 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+input:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+}
+
+/* --- Privacy Info Box --- */
+.info-box.privacy {
+    grid-column: 1 / 2;
+    grid-row: 2 / 3;
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    box-shadow: var(--shadow-soft);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-left: 6px solid var(--primary-blue);
+}
+
+.info-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    color: var(--primary-blue);
+}
+
+.info-header h4 {
+    margin: 0;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-box p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* --- Dashboard Section --- */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    grid-template-rows: auto auto auto;
+    gap: 12px;
+}
+
+/* 1. Status Card (Blue) */
+.status-card {
+    background-color: var(--primary-blue);
+    color: white;
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+}
+
+.status-header {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+    line-height: 1.2;
+}
+
+.status-desc {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    line-height: 1.4;
+}
+
+/* 2. Margin Card (White) */
+.margin-card {
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    box-shadow: var(--shadow-soft);
+    grid-column: 2 / 3;
+    grid-row: 2 / 3;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-left: 6px solid var(--risk-green);
+}
+
+.margin-card .card-header {
+    color: var(--risk-green);
+}
+
+.margin-card.at-risk {
+    border-left-color: var(--risk-red);
+}
+
+.margin-card.at-risk .card-header {
+    color: var(--risk-red);
+}
+
+.card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.margin-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--danger-text);
+    /* Red by default like mockup */
+    margin-bottom: 8px;
+}
+
+.margin-sub {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+}
+
+.action-btn {
+    align-self: flex-start;
+    background: #f3f4f6;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 99px;
+    font-weight: 600;
+    color: var(--text-main);
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+/* 3. Data Cards Row */
+.data-row {
+    grid-column: 1 / 3;
+    grid-row: 3 / 4;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+}
+
+.data-card {
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    box-shadow: var(--shadow-soft);
+    border-left: 6px solid #e5e7eb;
+}
+
+.data-card.tax {
+    border-left-color: var(--risk-orange);
+}
+
+.data-card.tax .card-header {
+    color: var(--risk-orange);
+}
+
+.data-card.deductions {
+    border-left-color: var(--risk-green);
+}
+
+.data-card.deductions .card-header {
+    color: var(--risk-green);
+}
+
+.data-card.bonus {
+    border-left-color: var(--primary-blue);
+}
+
+.data-card.bonus .card-header {
+    color: var(--primary-blue);
+}
+
+.data-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 8px;
+}
+
+.data-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+/* 4. Risk Analysis Card */
+.risk-card {
+    grid-column: 1 / 3;
+    grid-row: 4 / 5;
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    box-shadow: var(--shadow-soft);
+    border-left: 6px solid var(--risk-red);
+}
+
+.risk-card .card-header {
+    color: var(--risk-red);
+}
+
+.risk-bar-container {
+    height: 12px;
+    width: 100%;
+    background: #e5e7eb;
+    border-radius: 99px;
+    margin: 32px 0 16px;
+    position: relative;
+    display: flex;
+    overflow: hidden;
+}
+
+.segment {
+    height: 100%;
+}
+
+.seg-green {
+    width: 30%;
+    background: var(--risk-green);
+}
+
+.seg-yellow {
+    width: 20%;
+    background: var(--risk-yellow);
+}
+
+.seg-orange {
+    width: 20%;
+    background: var(--risk-orange);
+}
+
+.seg-red {
+    width: 30%;
+    background: var(--risk-red);
+}
+
+.indicator {
+    position: absolute;
+    top: -6px;
+    width: 4px;
+    height: 24px;
+    background: black;
+    transform: translateX(-50%);
+    z-index: 10;
+}
+
+.indicator::after {
+    content: 'Tu sei qui';
+    position: absolute;
+    top: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.risk-desc {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    .container {
+        gap: 12px;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        gap: 12px;
+    }
+
+    .status-card,
+    .margin-card,
+    .input-section,
+    .info-box.privacy {
+        grid-column: 1 / -1;
+        grid-row: auto;
+        padding: 16px;
+    }
+
+    .info-box.privacy {
+        order: 2;
+    }
+
+    .status-card {
+        min-height: auto;
+        padding: 20px;
+    }
+
+    .status-header {
+        font-size: 1.4rem;
+    }
+
+    .status-desc {
+        font-size: 0.9rem;
+    }
+
+    .margin-value {
+        font-size: 1.8rem;
+    }
+
+    .input-header h2 {
+        font-size: 1.1rem;
+    }
+
+    .data-row {
+        grid-column: 1 / -1;
+        grid-row: auto;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .data-card {
+        padding: 16px;
+    }
+
+    .data-card:last-child {
+        grid-column: 1 / -1;
+    }
+
+    .data-value {
+        font-size: 1.5rem;
+    }
+
+    .data-label {
+        font-size: 0.8rem;
+    }
+
+    .risk-card {
+        grid-column: 1 / -1;
+        grid-row: auto;
+        padding: 16px;
+    }
+
+    .risk-bar-container {
+        margin: 20px 0 12px;
+    }
+
+    .card-title {
+        font-size: 0.9rem;
+    }
+}

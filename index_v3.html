@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Bonus 2026</title>
+    <link rel="stylesheet" href="styles_v3.css">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="container">
+        <!-- Dashboard Grid -->
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+
+            <!-- 0. Input Section (Left Column) -->
+            <div class="input-section">
+                <div class="card-header">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                    <h4>I Tuoi Dati</h4>
+                </div>
+                <div class="grid">
+                    <div class="field">
+                        <label>RAL (€)</label>
+                        <input type="number" id="ral" placeholder="Es. 27500" value="0">
+                    </div>
+                    <div class="field">
+                        <label>Altri Redditi (€)</label>
+                        <input type="number" id="altri" value="0">
+                    </div>
+                    <div class="field">
+                        <label>Figli a Carico</label>
+                        <input type="number" id="figli" value="0">
+                    </div>
+                    <div class="field">
+                        <label>Spese Sanitarie (€)</label>
+                        <input type="number" id="sanita" value="0">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Privacy Info Box -->
+            <div class="info-box privacy">
+                <div class="info-header">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    <h4>Privacy al 100%</h4>
+                </div>
+                <p>I tuoi dati non lasciano mai questo browser. Il calcolo avviene localmente sul tuo dispositivo: non
+                    salviamo né vediamo la tua RAL.</p>
+            </div>
+
+            <!-- 1. Status Card -->
+            <div class="status-card">
+                <div class="status-header" id="status-title">Esito: Calcolo...</div>
+                <div class="status-desc" id="status-desc">Inserisci i tuoi dati per vedere l'analisi.</div>
+            </div>
+
+            <!-- 2. Margin Card -->
+            <div class="margin-card">
+                <div class="card-header">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <h4>Il Tuo Margine</h4>
+                </div>
+                <div class="margin-value" id="margin-value">0€</div>
+                <div class="margin-sub" id="margin-text">Prima della soglia critica.</div>
+                <button class="action-btn" onclick="resetCalculator()">Ricalcola</button>
+            </div>
+
+            <!-- 3. Data Row -->
+            <div class="data-row">
+                <div class="data-card tax">
+                    <div class="card-header">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        <h4>Imposta Lorda</h4>
+                    </div>
+                    <div class="data-value" id="val-lorda">0€</div>
+                </div>
+                <div class="data-card deductions">
+                    <div class="card-header">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                        <h4>Detrazioni Totali</h4>
+                    </div>
+                    <div class="data-value" id="val-det">0€</div>
+                </div>
+                <div class="data-card bonus">
+                    <div class="card-header">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="8" r="7"></circle>
+                            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                        </svg>
+                        <h4>Bonus Spettante</h4>
+                    </div>
+                    <div class="data-value" id="val-bonus">0€</div>
+                </div>
+            </div>
+
+            <!-- 4. Risk Analysis -->
+            <div class="risk-card">
+                <div class="card-header">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
+                        </path>
+                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                    <h4>Analisi del Rischio</h4>
+                </div>
+                <div class="risk-bar-container">
+                    <div class="segment seg-green"></div>
+                    <div class="segment seg-yellow"></div>
+                    <div class="segment seg-orange"></div>
+                    <div class="segment seg-red"></div>
+
+                    <div class="indicator" id="risk-indicator" style="left: 0%;"></div>
+                </div>
+                <div class="risk-desc">
+                    La tua imposta lorda è confrontata con le detrazioni. Il bonus si riduce all'aumentare del reddito
+                    in questa fascia (15k - 28k).
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="calculator_v3.js"></script>
+</body>
+
+</html>
