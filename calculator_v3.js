@@ -8,196 +8,215 @@ const CONSTANTS = {
     DETRAZIONE_LAVORO_RANGE: 13000,
     BONUS_MASSIMO: 1200,
     ALIQUOTA_IRPEF_BASSA: 0.23,
-    ALIQUOTA_IRPEF_ALTA: 0.25 // Using simplified 25% for 15-28k bracket as per 2024/2025 trends if applicable, or stick to provided logic
+    ALIQUOTA_IRPEF_ALTA: 0.25,
+    ALIQUOTA_IRPEF_MEDIA: 0.35,
+    ALIQUOTA_IRPEF_MAX: 0.43
 };
 
-// Reusing core logic but updating specific V3 UI
-function calcola() {
-    const val = (id) => parseFloat(document.getElementById(id).value) || 0;
+// Utils
+const formatCurrency = (amount) => {
+    return Math.round(amount).toLocaleString('it-IT') + "€";
+};
 
-    // Inputs
+// 1. Input Handling
+function getInputs() {
+    const val = (id) => parseFloat(document.getElementById(id).value) || 0;
     const ral = val('ral');
     const altri = val('altri');
-    const complessivo = ral + altri;
+    return {
+        ral,
+        altri,
+        figli: val('figli'),
+        sanita: val('sanita'),
+        complessivo: ral + altri
+    };
+}
 
-    // Check if this is the initial state (no data entered)
-    if (complessivo === 0) {
-        document.getElementById('status-title').innerText = "Benvenuto! 👋";
-        document.getElementById('status-desc').innerText = "Inserisci i tuoi dati per vedere l'analisi del bonus 2026.";
-        document.querySelector('.status-card').style.backgroundColor = "#0066ff";
+// 2. Core Logic / Calculation
+function calculateResults(inputs) {
+    const { ral, complessivo, figli, sanita } = inputs;
 
-        document.getElementById('margin-value').innerText = "—";
-        document.getElementById('margin-value').style.color = "#6b7280"; // Neutral gray
-        document.getElementById('margin-text').innerText = "Compila il form per iniziare.";
-        document.querySelector('.margin-card .card-header h4').innerText = "In Attesa di Dati";
-
-        document.getElementById('val-lorda').innerText = "0€";
-        document.getElementById('val-det').innerText = "0€";
-        document.getElementById('val-bonus').innerText = "0€";
-
-        // Reset margin card styling to neutral
-        const marginCard = document.querySelector('.margin-card');
-        marginCard.classList.remove('at-risk');
-        marginCard.style.borderLeftColor = ""; // Reset to CSS default
-
-        updateRiskBar(0);
-        return; // Exit early, don't run calculations
-    }
-
-    // Core Calculations (Simplified for V3 Dashboard visualization)
-    // 1. IRPEF Lorda
+    // A. IRPEF Lorda
     let irpef = 0;
     if (complessivo <= 15000) {
-        irpef = complessivo * 0.23;
+        irpef = complessivo * CONSTANTS.ALIQUOTA_IRPEF_BASSA;
     } else if (complessivo <= 28000) {
-        irpef = 3450 + (complessivo - 15000) * 0.23; // Keeping 23% for low bracket simplicity or older logic? 
-        // NOTE: Standard IRPEF 2024 is 23% up to 28k. 
-        // Let's stick to a straight 23% for <28k for simplicity unless strict bracket needed.
-        irpef = complessivo * 0.23;
+        irpef = 3450 + (complessivo - 15000) * CONSTANTS.ALIQUOTA_IRPEF_BASSA; // Simplified 23%
     } else if (complessivo <= 50000) {
-        irpef = 6440 + (complessivo - 28000) * 0.35;
+        irpef = 6440 + (complessivo - 28000) * CONSTANTS.ALIQUOTA_IRPEF_MEDIA;
     } else {
-        irpef = 14140 + (complessivo - 50000) * 0.43;
+        irpef = 14140 + (complessivo - 50000) * CONSTANTS.ALIQUOTA_IRPEF_MAX;
     }
 
-    // 2. Detrazioni (Simplified placeholder logic + User inputs)
-    // In V3, we assume user might inputs total deductions or we calculate basics
-    // For this demo, let's use the DETRAZIONI logic from V1/V2
-
+    // B. Detrazioni
     let detLavoro = 0;
     if (ral > 0) {
-        if (complessivo <= 15000) detLavoro = 1955;
+        if (complessivo <= 15000) detLavoro = CONSTANTS.DETRAZIONE_LAVORO_BASE;
         else if (complessivo <= 28000) {
-            detLavoro = 1910 + 1190 * ((28000 - complessivo) / 13000);
+            detLavoro = CONSTANTS.DETRAZIONE_LAVORO_RIDOTTA + CONSTANTS.DETRAZIONE_LAVORO_EXTRA * ((28000 - complessivo) / CONSTANTS.DETRAZIONE_LAVORO_RANGE);
         } else if (complessivo <= 50000) {
-            detLavoro = 1910 * ((50000 - complessivo) / 22000); // Rough approximation
+            detLavoro = CONSTANTS.DETRAZIONE_LAVORO_RIDOTTA * ((50000 - complessivo) / 22000);
         }
     }
 
-    const figli = val('figli') * 950; // Simplification
-    const sanita = Math.max(0, val('sanita') - 129) * 0.19;
+    const detFigli = figli * 950;
+    const detSanita = Math.max(0, sanita - 129) * 0.19;
+    const detTotali = detLavoro + detFigli + detSanita;
 
-    let detTotali = detLavoro + figli + sanita;
-
-    // 3. Bonus
+    // C. Bonus & Status
     let bonus = 0;
-    let statusTitle = "Esito: Calcolo...";
-    let statusDesc = "";
-    let statusColor = "#0066ff"; // Default Blue
-
-    let marginVal = 0;
-    let marginText = "";
-    let marginColor = "#1f2937";
-    let marginHeader = "Nel 2026 puoi ancora guadagnare";
+    let status = { title: "", desc: "", color: "" };
+    let margin = { val: 0, text: "", color: "", header: "" };
+    let riskPct = 0;
 
     if (complessivo > 28000) {
         // CASE: OVER 28k
         bonus = 0;
-        statusTitle = "Nessun Bonus ❌";
-        statusDesc = `Il tuo reddito (${complessivo.toLocaleString()}€) supera la soglia massima di 28.000€.`;
-        statusColor = "#ef4444"; // Red
-
-        marginVal = 0;
-        marginText = "Oltre soglia";
-        marginHeader = "Bonus Completamente Perso";
-
-        updateRiskBar(100); // Max right
+        status = {
+            title: "Nessun Bonus ❌",
+            desc: `Il tuo reddito (${formatCurrency(complessivo)}) supera la soglia massima di 28.000€.`,
+            color: "#ef4444" // Red
+        };
+        margin = {
+            val: 0,
+            text: "Oltre soglia",
+            color: "#1f2937",
+            header: "Bonus Completamente Perso"
+        };
+        riskPct = 100;
 
     } else if (complessivo <= 15000) {
-        // CASE: UNDER 15k (Full Bonus potentially, check incapienza)
+        // CASE: UNDER 15k
         if (irpef > detTotali) {
-            bonus = 100; // 1200 / 12 months = 100/mo? Or annual? Let's show annual 1200
             bonus = 1200;
-            statusTitle = "Bonus Pieno! ✅";
-            statusDesc = "Il tuo reddito è sotto i 15.000€ e hai capienza fiscale.";
-            statusColor = "#10b981"; // Green
-
-            marginVal = 15000 - complessivo;
-            marginText = "Prima della fase di riduzione (15.000€).";
-            marginColor = "#10b981"; // Green
-            marginHeader = "Nel 2026 puoi ancora guadagnare";
-
-            updateRiskBar(complessivo / 28000 * 100); // Scale relative to 28k max
+            status = {
+                title: "Bonus Pieno! ✅",
+                desc: "Il tuo reddito è sotto i 15.000€ e hai capienza fiscale.",
+                color: "#10b981" // Green
+            };
+            margin = {
+                val: 15000 - complessivo,
+                text: "Prima della fase di riduzione (15.000€).",
+                color: "#10b981", // Green
+                header: "Nel 2026 puoi ancora guadagnare"
+            };
+            riskPct = (complessivo / 28000) * 100;
         } else {
             // Incapiente
-            bonus = 0; // Or whatever differenzial logic
-            statusTitle = "Incapiente ⚠️";
-            statusDesc = "Le tue detrazioni superano l'imposta. Non riesci a generare il credito per il bonus.";
-            statusColor = "#f59e0b"; // Orange
-            marginText = "Necessiti di più imposta lorda.";
-            marginHeader = "Situazione Incapienza";
-            updateRiskBar(10);
+            bonus = 0;
+            status = {
+                title: "Incapiente ⚠️",
+                desc: "Le tue detrazioni superano l'imposta. Non riesci a generare il credito per il bonus.",
+                color: "#f59e0b" // Orange
+            };
+            margin = {
+                val: 0,
+                text: "Necessiti di più imposta lorda.",
+                color: "#1f2937",
+                header: "Situazione Incapienza"
+            };
+            riskPct = 10;
         }
 
     } else {
-        // CASE: 15k - 28k (Bonus a Rischio / Reduction)
-        // Bonus = (28000 - Red) * something? Or just check irpef - det?
-        // Renzi bonus 2020+ logic: 1200 if <15k. If 15-28k: Min(1200, Det - Irpef)? 
-        // Wait, standard logic provided in code: 
-        // if (complessivo <= 28000) bonus difference betwee det and irpef?
-
-        // Let's rely on V2 logic logic: 
-        // let diff = detTotali - irpef;
-        // bonus = Math.min(1200, Math.max(0, diff));
-
+        // CASE: 15k - 28k
         let diff = detTotali - irpef;
         bonus = Math.min(1200, Math.max(0, diff));
 
-        statusTitle = "Bonus a Rischio! ⚠️";
-        statusDesc = `Con la tua RAL di ${complessivo.toLocaleString()}€, sei nella fascia di riduzione.`;
-        statusColor = "#0066ff"; // Blue as in mockup
-
-        marginVal = 28000 - complessivo;
-        marginText = "Prima della soglia critica dei 28.000€.";
-        marginColor = "#dc2626"; // Red text for margin
-        marginHeader = "Perdi il bonus se guadagni altri";
-
-        let pct = (complessivo / 28000) * 100;
-        updateRiskBar(pct);
+        status = {
+            title: "Bonus a Rischio! ⚠️",
+            desc: `Con la tua RAL di ${formatCurrency(complessivo)}, sei nella fascia di riduzione.`,
+            color: "#0066ff" // Blue
+        };
+        margin = {
+            val: 28000 - complessivo,
+            text: "Prima della soglia critica dei 28.000€.",
+            color: "#dc2626", // Red
+            header: "Perdi il bonus se guadagni altri"
+        };
+        riskPct = (complessivo / 28000) * 100;
     }
 
-    // UI Updates
-    document.getElementById('status-title').innerText = statusTitle;
-    document.getElementById('status-desc').innerText = statusDesc;
-    document.querySelector('.status-card').style.backgroundColor = statusColor;
-
-    document.getElementById('margin-value').innerText = marginVal.toLocaleString() + "€";
-    document.getElementById('margin-value').style.color = marginColor;
-    document.getElementById('margin-text').innerText = marginText;
-    document.querySelector('.margin-card .card-header h4').innerText = marginHeader;
-
-    // Toggle margin card styling based on risk
-    const marginCard = document.querySelector('.margin-card');
-    if (complessivo > 15000 && complessivo <= 28000) {
-        marginCard.classList.add('at-risk');
-    } else {
-        marginCard.classList.remove('at-risk');
-    }
-
-    document.getElementById('val-lorda').innerText = irpef.toLocaleString() + "€";
-    document.getElementById('val-det').innerText = Math.round(detTotali).toLocaleString() + "€";
-    document.getElementById('val-bonus').innerText = Math.round(bonus).toLocaleString() + "€";
+    return { irpef, detTotali, bonus, status, margin, riskPct };
 }
 
-function updateRiskBar(percentage) {
-    // 0% = left, 100% = right
+// 3. UI Updates
+function updateUI(results) {
+    // Status Card
+    document.getElementById('status-title').innerText = results.status.title;
+    document.getElementById('status-desc').innerText = results.status.desc;
+    document.querySelector('.status-card').style.backgroundColor = results.status.color;
+
+    // Margin Card
+    const marginCard = document.querySelector('.margin-card');
+    document.getElementById('margin-value').innerText = formatCurrency(results.margin.val);
+    document.getElementById('margin-value').style.color = results.margin.color;
+    document.getElementById('margin-text').innerText = results.margin.text;
+    document.querySelector('.margin-card .card-header h4').innerText = results.margin.header;
+
+    // Margin Risk Styling
+    if (results.riskPct > 53 && results.riskPct < 100) { // Approx > 15k (15/28 = 53%)
+        marginCard.classList.add('at-risk');
+        marginCard.style.borderLeftColor = ""; // Use CSS class color
+    } else {
+        marginCard.classList.remove('at-risk');
+        marginCard.style.borderLeftColor = ""; // Use CSS default
+    }
+
+    // Data Cards
+    document.getElementById('val-lorda').innerText = formatCurrency(results.irpef);
+    document.getElementById('val-det').innerText = formatCurrency(results.detTotali);
+    document.getElementById('val-bonus').innerText = formatCurrency(results.bonus);
+
+    // Risk Bar
     const indicator = document.getElementById('risk-indicator');
-    // Clamp between 0 and 100
-    const clamped = Math.max(0, Math.min(100, percentage));
+    const clamped = Math.max(0, Math.min(100, results.riskPct));
     indicator.style.left = `${clamped}%`;
 }
 
+// 4. State Management
+function showWelcomeState() {
+    document.getElementById('status-title').innerText = "Benvenuto! 👋";
+    document.getElementById('status-desc').innerText = "Inserisci i tuoi dati per vedere l'analisi del bonus 2026.";
+    document.querySelector('.status-card').style.backgroundColor = "#0066ff";
+
+    const marginCard = document.querySelector('.margin-card');
+    document.getElementById('margin-value').innerText = "—";
+    document.getElementById('margin-value').style.color = "#6b7280";
+    document.getElementById('margin-text').innerText = "Compila il form per iniziare.";
+    document.querySelector('.margin-card .card-header h4').innerText = "In Attesa di Dati";
+
+    marginCard.classList.remove('at-risk');
+    marginCard.style.borderLeftColor = ""; // Reset to default
+
+    document.getElementById('val-lorda').innerText = "0€";
+    document.getElementById('val-det').innerText = "0€";
+    document.getElementById('val-bonus').innerText = "0€";
+
+    document.getElementById('risk-indicator').style.left = "0%";
+}
+
+function processCalculation() {
+    const inputs = getInputs();
+    if (inputs.complessivo === 0) {
+        showWelcomeState();
+        return;
+    }
+    const results = calculateResults(inputs);
+    updateUI(results);
+}
+
 function resetCalculator() {
-    document.getElementById('ral').value = 0;
-    document.getElementById('altri').value = 0;
-    document.getElementById('figli').value = 0;
-    document.getElementById('sanita').value = 0;
-    calcola();
+    ['ral', 'altri', 'figli', 'sanita'].forEach(id => {
+        document.getElementById(id).value = 0;
+    });
+    processCalculation();
 }
 
 // Init
 document.addEventListener('DOMContentLoaded', () => {
     const inputs = document.querySelectorAll('input');
-    inputs.forEach(i => i.addEventListener('input', calcola));
-    calcola();
+    inputs.forEach(i => i.addEventListener('input', processCalculation));
+    processCalculation(); // Initial run
 });
+

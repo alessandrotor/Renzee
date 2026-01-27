@@ -417,10 +417,6 @@ input:focus {
         font-size: 1.8rem;
     }
 
-    .input-header h2 {
-        font-size: 1.1rem;
-    }
-
     .data-row {
         grid-column: 1 / -1;
         grid-row: auto;
