@@ -20,6 +20,30 @@ function calcola() {
     const altri = val('altri');
     const complessivo = ral + altri;
 
+    // Check if this is the initial state (no data entered)
+    if (complessivo === 0) {
+        document.getElementById('status-title').innerText = "Benvenuto! 👋";
+        document.getElementById('status-desc').innerText = "Inserisci i tuoi dati per vedere l'analisi del bonus 2026.";
+        document.querySelector('.status-card').style.backgroundColor = "#0066ff";
+
+        document.getElementById('margin-value').innerText = "—";
+        document.getElementById('margin-value').style.color = "#6b7280"; // Neutral gray
+        document.getElementById('margin-text').innerText = "Compila il form per iniziare.";
+        document.querySelector('.margin-card .card-header h4').innerText = "In Attesa di Dati";
+
+        document.getElementById('val-lorda').innerText = "0€";
+        document.getElementById('val-det').innerText = "0€";
+        document.getElementById('val-bonus').innerText = "0€";
+
+        // Reset margin card styling to neutral
+        const marginCard = document.querySelector('.margin-card');
+        marginCard.classList.remove('at-risk');
+        marginCard.style.borderLeftColor = ""; // Reset to CSS default
+
+        updateRiskBar(0);
+        return; // Exit early, don't run calculations
+    }
+
     // Core Calculations (Simplified for V3 Dashboard visualization)
     // 1. IRPEF Lorda
     let irpef = 0;
@@ -64,6 +88,7 @@ function calcola() {
     let marginVal = 0;
     let marginText = "";
     let marginColor = "#1f2937";
+    let marginHeader = "Nel 2026 puoi ancora guadagnare";
 
     if (complessivo > 28000) {
         // CASE: OVER 28k
@@ -74,6 +99,7 @@ function calcola() {
 
         marginVal = 0;
         marginText = "Oltre soglia";
+        marginHeader = "Bonus Completamente Perso";
 
         updateRiskBar(100); // Max right
 
@@ -89,6 +115,7 @@ function calcola() {
             marginVal = 15000 - complessivo;
             marginText = "Prima della fase di riduzione (15.000€).";
             marginColor = "#10b981"; // Green
+            marginHeader = "Nel 2026 puoi ancora guadagnare";
 
             updateRiskBar(complessivo / 28000 * 100); // Scale relative to 28k max
         } else {
@@ -98,6 +125,7 @@ function calcola() {
             statusDesc = "Le tue detrazioni superano l'imposta. Non riesci a generare il credito per il bonus.";
             statusColor = "#f59e0b"; // Orange
             marginText = "Necessiti di più imposta lorda.";
+            marginHeader = "Situazione Incapienza";
             updateRiskBar(10);
         }
 
@@ -122,6 +150,7 @@ function calcola() {
         marginVal = 28000 - complessivo;
         marginText = "Prima della soglia critica dei 28.000€.";
         marginColor = "#dc2626"; // Red text for margin
+        marginHeader = "Perdi il bonus se guadagni altri";
 
         let pct = (complessivo / 28000) * 100;
         updateRiskBar(pct);
@@ -135,6 +164,7 @@ function calcola() {
     document.getElementById('margin-value').innerText = marginVal.toLocaleString() + "€";
     document.getElementById('margin-value').style.color = marginColor;
     document.getElementById('margin-text').innerText = marginText;
+    document.querySelector('.margin-card .card-header h4').innerText = marginHeader;
 
     // Toggle margin card styling based on risk
     const marginCard = document.querySelector('.margin-card');
