@@ -167,11 +167,6 @@ function updateUI(results) {
     document.getElementById('val-lorda').innerText = formatCurrency(results.irpef);
     document.getElementById('val-det').innerText = formatCurrency(results.detTotali);
     document.getElementById('val-bonus').innerText = formatCurrency(results.bonus);
-
-    // Risk Bar
-    const indicator = document.getElementById('risk-indicator');
-    const clamped = Math.max(0, Math.min(100, results.riskPct));
-    indicator.style.left = `${clamped}%`;
 }
 
 // 4. State Management
@@ -192,8 +187,6 @@ function showWelcomeState() {
     document.getElementById('val-lorda').innerText = "0€";
     document.getElementById('val-det').innerText = "0€";
     document.getElementById('val-bonus').innerText = "0€";
-
-    document.getElementById('risk-indicator').style.left = "0%";
 }
 
 function processCalculation() {

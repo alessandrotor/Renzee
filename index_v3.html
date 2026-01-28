@@ -65,8 +65,9 @@
 
             <!-- 1. Status Card -->
             <div class="status-card">
-                <div class="status-header" id="status-title">Esito: Calcolo...</div>
-                <div class="status-desc" id="status-desc">Inserisci i tuoi dati per vedere l'analisi.</div>
+                <div class="status-header" id="status-title">Benvenuto! 👋</div>
+                <div class="status-desc" id="status-desc">Inserisci i tuoi dati per vedere l'analisi del bonus 2026.
+                </div>
             </div>
 
             <!-- 2. Margin Card -->
@@ -77,10 +78,10 @@
                         <circle cx="12" cy="12" r="10"></circle>
                         <polyline points="12 6 12 12 16 14"></polyline>
                     </svg>
-                    <h4>Nel 2026 puoi ancora guadagnare</h4>
+                    <h4>In Attesa di Dati</h4>
                 </div>
-                <div class="margin-value" id="margin-value">0€</div>
-                <div class="margin-sub" id="margin-text">Prima della soglia critica.</div>
+                <div class="margin-value" id="margin-value">—</div>
+                <div class="margin-sub" id="margin-text">Compila il form per iniziare.</div>
                 <button class="action-btn" onclick="resetCalculator()">Ricalcola</button>
             </div>
 
@@ -120,33 +121,6 @@
                         <h4>Bonus Spettante</h4>
                     </div>
                     <div class="data-value" id="val-bonus">0€</div>
-                </div>
-            </div>
-
-            <!-- 4. Risk Analysis -->
-            <div class="risk-card">
-                <div class="card-header">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path
-                            d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
-                        </path>
-                        <line x1="12" y1="9" x2="12" y2="13"></line>
-                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                    </svg>
-                    <h4>Analisi del Rischio</h4>
-                </div>
-                <div class="risk-bar-container">
-                    <div class="segment seg-green"></div>
-                    <div class="segment seg-yellow"></div>
-                    <div class="segment seg-orange"></div>
-                    <div class="segment seg-red"></div>
-
-                    <div class="indicator" id="risk-indicator" style="left: 0%;"></div>
-                </div>
-                <div class="risk-desc">
-                    La tua imposta lorda è confrontata con le detrazioni. Il bonus si riduce all'aumentare del reddito
-                    in questa fascia (15k - 28k).
                 </div>
             </div>
 
