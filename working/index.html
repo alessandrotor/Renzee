@@ -202,8 +202,79 @@
         <!-- Pulsante reset - modifica il testo qui -->
         <button id="reset-btn" class="reset-btn" title="Cancella tutti i dati salvati"
             aria-label="Resetta tutti i dati del simulatore">Reset dati</button>
+
+        <!-- ═══════════════════════════════════════════════
+             GRAFICO EFFETTO SOGLIA
+             ═══════════════════════════════════════════════ -->
+        <div class="ext-section" id="section-soglia">
+            <div class="ext-section-title">Effetto Soglia — bonus al variare del reddito</div>
+            <p class="ext-note">Come cambia il bonus se il reddito variasse, con le tue detrazioni attuali.</p>
+            <div class="chart-wrap">
+                <div class="chart-empty-hint" id="soglia-empty">Inserisci il reddito per visualizzare il grafico</div>
+                <canvas id="chart-soglia" style="display:none"></canvas>
+            </div>
+            <div class="chart-legend" id="soglia-legend" style="display:none">
+                <span class="legend-item green">Bonus pieno (0–15k)</span>
+                <span class="legend-item amber">Zona parziale (15k–28k)</span>
+                <span class="legend-item red">Fuori soglia (28k+)</span>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════
+             CAPIRE COSA HAI IN BUSTA PAGA
+             ═══════════════════════════════════════════════ -->
+        <div class="ext-section" id="section-faq">
+            <div class="ext-section-title">Capire cosa hai in busta paga</div>
+
+            <details class="faq-item">
+                <summary>Da dove arrivano quei ~100€ in più al mese?</summary>
+                <p>Si chiama <strong>trattamento integrativo</strong> (il vecchio «bonus Renzi», oggi regolato dal D.Lgs. 216/2023). Non è un regalo dello Stato, ma un meccanismo fiscale: se paghi abbastanza IRPEF, il fisco ti restituisce fino a 1.200€ l'anno direttamente in busta paga — circa 100€ al mese. Lo anticipa il datore di lavoro ogni mese come trattenuta a tuo favore; a fine anno si fa il conteggio definitivo in fase di dichiarazione.</p>
+            </details>
+
+            <details class="faq-item">
+                <summary>Perché non tutti ce l'hanno?</summary>
+                <p>Il bonus dipende da due condizioni. Prima: il reddito complessivo (RAL più eventuali altri redditi) deve restare entro certi limiti. Sotto i <strong>15.000€</strong> ricevi il bonus pieno — ma solo se l'IRPEF che paghi supera la detrazione da lavoro dipendente, altrimenti sei «incapiente» e il meccanismo non scatta. Tra <strong>15.000€ e 28.000€</strong> il bonus si riduce progressivamente. Sopra i <strong>28.000€</strong> non spetta nulla.</p>
+            </details>
+
+            <details class="faq-item">
+                <summary>Rischio di dover restituire il bonus?</summary>
+                <p>Sì, è possibile. Il datore di lavoro eroga il bonus mese per mese calcolando solo sul reddito che ti paga lui. Se a fine anno il reddito complessivo — inclusi altri lavori, affitti, investimenti — supera le soglie, in sede di dichiarazione dei redditi (730 o Redditi PF) dovrai restituire tutto o parte del bonus già incassato. Controlla con attenzione se hai più fonti di reddito durante l'anno.</p>
+            </details>
+
+            <details class="faq-item">
+                <summary>Cosa succede se ho due lavori o cambio datore di lavoro?</summary>
+                <p>Con più datori di lavoro contemporanei, ciascuno può erogare il bonus calcolando solo sul proprio contratto. A fine anno viene però conteggiato il reddito totale: se la somma supera la soglia, il 730 ti chiede di restituire la differenza. Se cambi lavoro durante l'anno, il nuovo datore non conosce quanto hai guadagnato in precedenza e parte da zero. È fondamentale fare il 730 per regolarizzare tutto e non trovarsi sorprese.</p>
+            </details>
+
+            <details class="faq-item">
+                <summary>Il bonus compare sempre in busta paga?</summary>
+                <p>Dovrebbe apparire come voce separata, spesso con la dicitura <strong>«Trattamento Integrativo»</strong> oppure <strong>«Bonus IRPEF»</strong>. Se non lo trovi, parla con l'ufficio paghe: può essere aggregato in un'altra voce, oppure potresti non averne diritto per via del reddito o dell'incapienza fiscale. In quel caso usa questo simulatore per verificare la tua situazione specifica.</p>
+            </details>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════
+             PDF + PRO
+             ═══════════════════════════════════════════════ -->
+        <div class="cta-section">
+            <button class="btn-pdf" id="btn-pdf">↓ Salva il riepilogo (PDF)</button>
+        </div>
+
+        <div class="pro-section">
+            <div class="pro-title">Funzioni avanzate <span class="badge-soon">Prossimamente</span></div>
+            <ul class="pro-list">
+                <li class="pro-free">✓ Calcolo bonus — <em>gratis</em></li>
+                <li class="pro-free">✓ Grafico effetto soglia — <em>gratis</em></li>
+                <li class="pro-free">✓ Guida in busta paga — <em>gratis</em></li>
+                <li class="pro-locked">Avvisi email quando ti avvicini alla soglia</li>
+                <li class="pro-locked">Storico dei calcoli anno per anno</li>
+                <li class="pro-locked">Report PDF dettagliato con analisi personalizzata</li>
+            </ul>
+            <button class="btn-pro" id="btn-pro">Avvisami quando sarà disponibile</button>
+        </div>
+
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="calculator.js"></script>
 
 </body>

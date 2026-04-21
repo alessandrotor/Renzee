@@ -713,3 +713,350 @@ select {
     .empty-hint { padding: 10px 0 6px; }
     .empty-hint p { font-size: 0.65rem; }
 }
+
+
+/* ─────────────────────────────────────
+   SEZIONI EXTRA (grafici, FAQ, CTA, Pro)
+   ───────────────────────────────────── */
+
+.ext-section {
+    margin-top: 24px;
+    background: var(--res-bg);
+    border-radius: 3px;
+    padding: 20px 24px;
+    position: relative;
+}
+
+/* Barra laterale sinistra (stesso stile di .res-box) */
+.ext-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--accent);
+    border-radius: 3px 0 0 3px;
+}
+
+.ext-section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--res-muted);
+    letter-spacing: 0.12em;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--res-line);
+}
+
+.ext-note {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--res-muted);
+    margin: 0 0 14px;
+    line-height: 1.5;
+    letter-spacing: 0.02em;
+}
+
+
+/* ─────────────────────────────────────
+   GRAFICO EFFETTO SOGLIA
+   ───────────────────────────────────── */
+
+.chart-wrap {
+    position: relative;
+    height: 200px;
+}
+
+.chart-empty-hint {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--res-muted);
+    opacity: 0.45;
+    pointer-events: none;
+}
+
+.chart-legend {
+    display: flex;
+    gap: 16px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--res-muted);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    letter-spacing: 0.03em;
+}
+
+.legend-item::before {
+    content: '■';
+    font-size: 0.65rem;
+}
+
+.legend-item.green::before { color: #3eb36b; }
+.legend-item.amber::before { color: #c9a030; }
+.legend-item.red::before   { color: #c04048; }
+
+
+/* ─────────────────────────────────────
+   FAQ — CAPIRE COSA HAI IN BUSTA PAGA
+   ───────────────────────────────────── */
+
+.faq-item {
+    border-bottom: 1px solid var(--res-line);
+}
+
+.faq-item:last-child {
+    border-bottom: none;
+}
+
+.faq-item summary {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--res-text);
+    cursor: pointer;
+    padding: 11px 0;
+    user-select: none;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    transition: color 0.15s ease;
+}
+
+.faq-item summary:hover {
+    color: var(--paper);
+}
+
+.faq-item summary::after {
+    content: '+';
+    font-family: 'DM Mono', monospace;
+    font-size: 1rem;
+    color: var(--accent);
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+    line-height: 1;
+}
+
+.faq-item[open] > summary::after {
+    transform: rotate(45deg);
+}
+
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::marker { display: none; }
+
+.faq-item p {
+    font-size: 0.78rem;
+    color: var(--res-muted);
+    line-height: 1.65;
+    margin: 0 0 14px;
+    padding-left: 2px;
+}
+
+.faq-item p strong {
+    color: var(--res-text);
+    font-weight: 600;
+}
+
+
+/* ─────────────────────────────────────
+   CTA — PDF
+   ───────────────────────────────────── */
+
+.cta-section {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.btn-pdf {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    padding: 9px 22px;
+    border-radius: 3px;
+    cursor: pointer;
+    letter-spacing: 0.06em;
+    transition: all 0.2s ease;
+}
+
+.btn-pdf:hover {
+    background: var(--accent);
+    color: var(--paper);
+}
+
+.btn-pdf:active {
+    transform: scale(0.97);
+}
+
+
+/* ─────────────────────────────────────
+   PRO — FUNZIONI AVANZATE
+   ───────────────────────────────────── */
+
+.pro-section {
+    margin-top: 16px;
+    background: var(--res-bg);
+    border-radius: 3px;
+    padding: 20px 24px;
+    position: relative;
+    margin-bottom: 40px;
+}
+
+.pro-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: #6366f1;
+    border-radius: 3px 0 0 3px;
+}
+
+.pro-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--res-muted);
+    letter-spacing: 0.12em;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--res-line);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.badge-soon {
+    font-size: 0.5rem;
+    background: #6366f1;
+    color: #e0e4ff;
+    padding: 2px 7px;
+    border-radius: 2px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.pro-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 16px;
+}
+
+.pro-list li {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.74rem;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--res-line);
+    line-height: 1.4;
+}
+
+.pro-list li:last-child {
+    border-bottom: none;
+}
+
+.pro-free {
+    color: var(--res-text);
+}
+
+.pro-free em {
+    color: #3eb36b;
+    font-style: normal;
+}
+
+.pro-locked {
+    color: var(--res-muted);
+    padding-left: 18px;
+    position: relative;
+}
+
+.pro-locked::before {
+    content: '○';
+    position: absolute;
+    left: 0;
+    color: #6366f1;
+    opacity: 0.7;
+}
+
+.btn-pro {
+    width: 100%;
+    background: transparent;
+    border: 1px solid rgba(99, 102, 241, 0.5);
+    color: rgba(160, 163, 240, 0.9);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    padding: 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: all 0.2s ease;
+}
+
+.btn-pro:hover {
+    background: rgba(99, 102, 241, 0.12);
+    border-color: rgba(99, 102, 241, 0.8);
+    color: #c7d2fe;
+}
+
+.btn-pro:disabled {
+    cursor: default;
+}
+
+
+/* ─────────────────────────────────────
+   STAMPA / PDF
+   ───────────────────────────────────── */
+
+@media print {
+    body {
+        padding: 0;
+        background: white;
+    }
+
+    .toggle-container,
+    .reset-btn,
+    #section-soglia,
+    #section-faq,
+    .cta-section,
+    .pro-section {
+        display: none !important;
+    }
+
+    .res-box {
+        border: 1px solid #ccc;
+        background: white !important;
+        color: black !important;
+        box-shadow: none;
+    }
+
+    .res-box * {
+        color: black !important;
+    }
+
+    .badge {
+        border: 1px solid #999;
+        background: #eee !important;
+        color: black !important;
+    }
+
+    .header-row {
+        border-bottom: 2px solid #333;
+    }
+}

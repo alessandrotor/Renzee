@@ -416,6 +416,248 @@ function calcola() {
     const badge = document.getElementById('badge');
     badge.innerText = bText;
     badge.style.background = bColor;
+
+    renderSogliaChart(ral, bonus);
+}
+
+
+// ── Grafico Effetto Soglia ───────────────────────
+
+let _sogliaChart = null;
+
+/**
+ * Calcolo bonus puro (senza accesso al DOM) — usato per generare la curva del grafico.
+ * Replica la stessa logica di calcola() ma accetta i valori come parametri.
+ */
+function calcolaBonusPuro(ral, altri, figli, sanita, trasporti, mutuo, edilizia, affittoValore, canoneAnnuo) {
+    const complessivo = ral + altri;
+
+    const irpef = (complessivo <= FISCALE.SOGLIA_IRPEF_ALTA)
+        ? (complessivo * FISCALE.ALIQUOTA_IRPEF_BASSA)
+        : (FISCALE.SOGLIA_IRPEF_ALTA * FISCALE.ALIQUOTA_IRPEF_BASSA + (complessivo - FISCALE.SOGLIA_IRPEF_ALTA) * FISCALE.ALIQUOTA_IRPEF_ALTA);
+
+    let detLavoro = 0;
+    if (ral > 0) {
+        if (complessivo <= FISCALE.SOGLIA_BONUS_PIENO) {
+            detLavoro = FISCALE.DETRAZIONE_LAVORO_BASE;
+        } else if (complessivo <= FISCALE.SOGLIA_BONUS_MAX) {
+            detLavoro = FISCALE.DETRAZIONE_LAVORO_RIDOTTA + FISCALE.DETRAZIONE_LAVORO_EXTRA * ((FISCALE.SOGLIA_BONUS_MAX - complessivo) / FISCALE.DETRAZIONE_LAVORO_RANGE);
+        }
+    }
+
+    let detFigli = 0;
+    if (figli > 0) {
+        detFigli = (figli * FISCALE.DETRAZIONE_FIGLI_PER_FIGLIO) * ((FISCALE.SOGLIA_FIGLI - complessivo) / FISCALE.SOGLIA_FIGLI);
+        if (detFigli < 0) detFigli = 0;
+    }
+
+    const detSpese = Math.max(0, (sanita - FISCALE.DETRAZIONE_SANITA_FRANCHIGIA) * FISCALE.ALIQUOTA_DETRAZIONE)
+        + (Math.min(trasporti, FISCALE.DETRAZIONE_TRASPORTI_MAX) * FISCALE.ALIQUOTA_DETRAZIONE);
+
+    let detAffitto = 0;
+    if (affittoValore === 'giovani') {
+        if (complessivo <= FISCALE.SOGLIA_AFFITTO_GIOVANI) {
+            const dg = canoneAnnuo * FISCALE.ALIQUOTA_AFFITTO_GIOVANI;
+            detAffitto = Math.max(FISCALE.DETRAZIONE_AFFITTO_GIOVANI_MIN, Math.min(FISCALE.DETRAZIONE_AFFITTO_GIOVANI_MAX, dg));
+            if (canoneAnnuo === 0) detAffitto = 0;
+        }
+    } else {
+        const importoFisso = parseFloat(affittoValore) || 0;
+        if (complessivo <= FISCALE.SOGLIA_AFFITTO_PIENO) {
+            detAffitto = importoFisso;
+        } else if (complessivo <= FISCALE.SOGLIA_AFFITTO_RIDOTTO) {
+            detAffitto = importoFisso * 0.5;
+        }
+    }
+
+    const detMutuo = Math.min(mutuo, FISCALE.DETRAZIONE_MUTUO_MAX) * FISCALE.ALIQUOTA_DETRAZIONE;
+    const detAltre = detMutuo + edilizia;
+    const detTotali = detLavoro + detFigli + detSpese + detAffitto + detAltre;
+
+    if (complessivo > FISCALE.SOGLIA_BONUS_MAX) return 0;
+    if (complessivo <= FISCALE.SOGLIA_BONUS_PIENO) {
+        return irpef > detLavoro ? FISCALE.BONUS_MASSIMO : 0;
+    }
+    return Math.round(Math.min(FISCALE.BONUS_MASSIMO, Math.max(0, detTotali - irpef)));
+}
+
+function renderSogliaChart(currentRal, currentBonus) {
+    const canvas = document.getElementById('chart-soglia');
+    const emptyHint = document.getElementById('soglia-empty');
+    const legend = document.getElementById('soglia-legend');
+
+    if (currentRal <= 0) {
+        if (canvas) canvas.style.display = 'none';
+        if (emptyHint) emptyHint.style.display = 'flex';
+        if (legend) legend.style.display = 'none';
+        if (_sogliaChart) { _sogliaChart.destroy(); _sogliaChart = null; }
+        return;
+    }
+
+    if (canvas) canvas.style.display = 'block';
+    if (emptyHint) emptyHint.style.display = 'none';
+    if (legend) legend.style.display = 'flex';
+
+    // Leggi le detrazioni attuali (rimangono fisse, varia solo il RAL)
+    const altri = parseFloat(document.getElementById('altri').value) || 0;
+    const figli = parseInt(document.getElementById('figli').value) || 0;
+    const sanita = parseFloat(document.getElementById('sanita').value) || 0;
+    const trasporti = parseFloat(document.getElementById('trasporti').value) || 0;
+    const mutuo = parseFloat(document.getElementById('mutuo').value) || 0;
+    const edilizia = parseFloat(document.getElementById('edilizia').value) || 0;
+    const affittoValore = document.getElementById('affitto').value;
+    const canoneAnnuo = parseFloat(document.getElementById('canone').value) || 0;
+
+    const STEP = 500;
+    const CHART_MAX = 30000;
+    const labels = [];
+    const bonusData = [];
+
+    for (let ral = 0; ral <= CHART_MAX; ral += STEP) {
+        labels.push(ral);
+        bonusData.push(calcolaBonusPuro(ral, altri, figli, sanita, trasporti, mutuo, edilizia, affittoValore, canoneAnnuo));
+    }
+
+    if (_sogliaChart) { _sogliaChart.destroy(); _sogliaChart = null; }
+
+    // Limita la posizione utente al range del grafico
+    const showUserMarker = currentRal <= CHART_MAX;
+    const userRalOnChart = Math.min(currentRal, CHART_MAX);
+
+    const bgPlugin = {
+        id: 'bgRegions',
+        beforeDraw(chart) {
+            const { ctx, chartArea, scales } = chart;
+            if (!chartArea) return;
+            const xs = scales.x;
+            const { top, bottom } = chartArea;
+
+            const x0  = xs.getPixelForValue(0);
+            const x15 = xs.getPixelForValue(15000);
+            const x28 = xs.getPixelForValue(28000);
+            const xMax = xs.getPixelForValue(CHART_MAX);
+
+            ctx.fillStyle = 'rgba(62, 179, 107, 0.07)';
+            ctx.fillRect(x0, top, x15 - x0, bottom - top);
+
+            ctx.fillStyle = 'rgba(201, 160, 48, 0.07)';
+            ctx.fillRect(x15, top, x28 - x15, bottom - top);
+
+            ctx.fillStyle = 'rgba(192, 64, 72, 0.07)';
+            ctx.fillRect(x28, top, xMax - x28, bottom - top);
+
+            // Linee verticali sulle soglie
+            [15000, 28000].forEach(thr => {
+                const x = xs.getPixelForValue(thr);
+                ctx.beginPath();
+                ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([4, 4]);
+                ctx.moveTo(x, top);
+                ctx.lineTo(x, bottom);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            });
+        },
+        afterDraw(chart) {
+            if (!showUserMarker) return;
+            const { ctx, chartArea, scales } = chart;
+            const xs = scales.x;
+            const ys = scales.y;
+            const { top } = chartArea;
+
+            const userPxX = xs.getPixelForValue(userRalOnChart);
+            const userPxY = ys.getPixelForValue(currentBonus);
+
+            // Linea verticale posizione utente
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([3, 4]);
+            ctx.moveTo(userPxX, top);
+            ctx.lineTo(userPxX, userPxY + 6);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Pallino posizione utente
+            ctx.beginPath();
+            ctx.arc(userPxX, userPxY, 5, 0, Math.PI * 2);
+            ctx.fillStyle = '#e8edf2';
+            ctx.fill();
+            ctx.strokeStyle = '#1d6b7a';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Etichetta "tu"
+            ctx.fillStyle = '#e8edf2';
+            ctx.font = '9px DM Mono, monospace';
+            ctx.textAlign = 'center';
+            const labelY = userPxY > top + 16 ? userPxY - 10 : userPxY + 18;
+            ctx.fillText('tu', userPxX, labelY);
+        }
+    };
+
+    _sogliaChart = new Chart(canvas, {
+        type: 'line',
+        plugins: [bgPlugin],
+        data: {
+            labels,
+            datasets: [{
+                data: bonusData,
+                borderColor: 'rgba(99, 102, 241, 0.85)',
+                borderWidth: 2,
+                pointRadius: 0,
+                fill: false,
+                tension: 0.1,
+            }],
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 200 },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(13, 27, 42, 0.95)',
+                    titleColor: '#7a8898',
+                    bodyColor: '#e8edf2',
+                    borderColor: 'rgba(255,255,255,0.08)',
+                    borderWidth: 1,
+                    callbacks: {
+                        title: (items) => `RAL: ${items[0].parsed.x.toLocaleString()} €`,
+                        label: (item) => `Bonus: ${item.parsed.y.toLocaleString()} €`,
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    type: 'linear',
+                    min: 0,
+                    max: CHART_MAX,
+                    grid: { color: 'rgba(255,255,255,0.04)' },
+                    ticks: {
+                        color: '#5a6878',
+                        callback: (v) => v === 0 ? '0' : `${v / 1000}k`,
+                        stepSize: 5000,
+                        font: { family: "'DM Mono', monospace", size: 9 },
+                    },
+                    border: { color: 'rgba(255,255,255,0.08)' },
+                },
+                y: {
+                    min: 0,
+                    max: 1400,
+                    grid: { color: 'rgba(255,255,255,0.04)' },
+                    ticks: {
+                        color: '#5a6878',
+                        callback: (v) => v === 0 ? '0€' : `${v}€`,
+                        stepSize: 400,
+                        font: { family: "'DM Mono', monospace", size: 9 },
+                    },
+                    border: { color: 'rgba(255,255,255,0.08)' },
+                },
+            },
+        },
+    });
 }
 
 
@@ -459,6 +701,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Pulsante reset
     document.getElementById('reset-btn').addEventListener('click', clearSavedData);
+
+    // Pulsante PDF
+    const btnPdf = document.getElementById('btn-pdf');
+    if (btnPdf) {
+        btnPdf.addEventListener('click', () => window.print());
+    }
+
+    // Pulsante Pro (skeleton)
+    const btnPro = document.getElementById('btn-pro');
+    if (btnPro) {
+        btnPro.addEventListener('click', function () {
+            const email = prompt('Inserisci la tua email per essere avvisato quando sarà disponibile:');
+            if (email && email.includes('@')) {
+                this.textContent = '✓ Ti avviseremo!';
+                this.disabled = true;
+                this.style.opacity = '0.5';
+            }
+        });
+    }
 
     // Primo calcolo
     toggleMode();
