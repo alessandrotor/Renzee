@@ -483,19 +483,10 @@ function calcolaBonusPuro(ral, altri, figli, sanita, trasporti, mutuo, edilizia,
 
 function renderSogliaChart(currentRal, currentBonus) {
     const canvas = document.getElementById('chart-soglia');
-    const emptyHint = document.getElementById('soglia-empty');
     const legend = document.getElementById('soglia-legend');
 
-    if (currentRal <= 0) {
-        if (canvas) canvas.style.display = 'none';
-        if (emptyHint) emptyHint.style.display = 'flex';
-        if (legend) legend.style.display = 'none';
-        if (_sogliaChart) { _sogliaChart.destroy(); _sogliaChart = null; }
-        return;
-    }
-
-    if (canvas) canvas.style.display = 'block';
-    if (emptyHint) emptyHint.style.display = 'none';
+    if (!canvas) return;
+    canvas.style.display = 'block';
     if (legend) legend.style.display = 'flex';
 
     // Leggi le detrazioni attuali (rimangono fisse, varia solo il RAL)
@@ -723,4 +714,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Primo calcolo
     toggleMode();
+
+    // Grafico effetto soglia visibile subito (curva teorica senza RAL)
+    renderSogliaChart(0, 0);
 });

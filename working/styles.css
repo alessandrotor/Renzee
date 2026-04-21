@@ -739,6 +739,22 @@ select {
     border-radius: 3px 0 0 3px;
 }
 
+/* Variante chiara — per sezioni educative (FAQ, Pro) */
+.ext-section-light {
+    background: var(--paper);
+    border: 1px solid var(--line);
+}
+
+.ext-section-light::before {
+    background: var(--accent);
+    opacity: 0.5;
+}
+
+.ext-section-light .ext-section-title {
+    color: var(--muted);
+    border-color: var(--line);
+}
+
 .ext-section-title {
     font-family: 'DM Mono', monospace;
     font-size: 0.65rem;
@@ -815,7 +831,7 @@ select {
    ───────────────────────────────────── */
 
 .faq-item {
-    border-bottom: 1px solid var(--res-line);
+    border-bottom: 1px solid var(--line);
 }
 
 .faq-item:last-child {
@@ -825,7 +841,7 @@ select {
 .faq-item summary {
     font-size: 0.82rem;
     font-weight: 500;
-    color: var(--res-text);
+    color: var(--ink);
     cursor: pointer;
     padding: 11px 0;
     user-select: none;
@@ -838,7 +854,7 @@ select {
 }
 
 .faq-item summary:hover {
-    color: var(--paper);
+    color: var(--accent);
 }
 
 .faq-item summary::after {
@@ -860,14 +876,14 @@ select {
 
 .faq-item p {
     font-size: 0.78rem;
-    color: var(--res-muted);
+    color: var(--muted);
     line-height: 1.65;
     margin: 0 0 14px;
     padding-left: 2px;
 }
 
 .faq-item p strong {
-    color: var(--res-text);
+    color: var(--ink);
     font-weight: 600;
 }
 
@@ -910,7 +926,8 @@ select {
 
 .pro-section {
     margin-top: 16px;
-    background: var(--res-bg);
+    background: var(--paper);
+    border: 1px solid var(--line);
     border-radius: 3px;
     padding: 20px 24px;
     position: relative;
@@ -933,11 +950,11 @@ select {
     font-size: 0.65rem;
     text-transform: uppercase;
     font-weight: 500;
-    color: var(--res-muted);
+    color: var(--muted);
     letter-spacing: 0.12em;
     margin-bottom: 14px;
     padding-bottom: 8px;
-    border-bottom: 1px solid var(--res-line);
+    border-bottom: 1px solid var(--line);
     display: flex;
     align-items: center;
     gap: 10px;
@@ -964,7 +981,7 @@ select {
     font-family: 'DM Mono', monospace;
     font-size: 0.74rem;
     padding: 7px 0;
-    border-bottom: 1px solid var(--res-line);
+    border-bottom: 1px solid var(--line);
     line-height: 1.4;
 }
 
@@ -973,16 +990,16 @@ select {
 }
 
 .pro-free {
-    color: var(--res-text);
+    color: var(--ink);
 }
 
 .pro-free em {
-    color: #3eb36b;
+    color: #2e7d52;
     font-style: normal;
 }
 
 .pro-locked {
-    color: var(--res-muted);
+    color: var(--muted);
     padding-left: 18px;
     position: relative;
 }
