@@ -511,95 +511,205 @@ function renderSogliaChart(currentRal, currentBonus) {
 
     if (_sogliaChart) { _sogliaChart.destroy(); _sogliaChart = null; }
 
-    // Limita la posizione utente al range del grafico
-    const showUserMarker = currentRal <= CHART_MAX;
+    const showUserMarker = currentRal > 0;
     const userRalOnChart = Math.min(currentRal, CHART_MAX);
 
-    const bgPlugin = {
-        id: 'bgRegions',
+    // ── Plugin disegno personalizzato ────────────
+    const drawPlugin = {
+        id: 'drawPlugin',
+
         beforeDraw(chart) {
             const { ctx, chartArea, scales } = chart;
             if (!chartArea) return;
             const xs = scales.x;
             const { top, bottom } = chartArea;
+            const h = bottom - top;
 
             const x0  = xs.getPixelForValue(0);
             const x15 = xs.getPixelForValue(15000);
             const x28 = xs.getPixelForValue(28000);
-            const xMax = xs.getPixelForValue(CHART_MAX);
+            const xEnd = xs.getPixelForValue(CHART_MAX);
 
-            ctx.fillStyle = 'rgba(62, 179, 107, 0.07)';
-            ctx.fillRect(x0, top, x15 - x0, bottom - top);
+            // Sfondi delle tre zone
+            ctx.fillStyle = 'rgba(62, 179, 107, 0.16)';
+            ctx.fillRect(x0, top, x15 - x0, h);
 
-            ctx.fillStyle = 'rgba(201, 160, 48, 0.07)';
-            ctx.fillRect(x15, top, x28 - x15, bottom - top);
+            ctx.fillStyle = 'rgba(201, 160, 48, 0.16)';
+            ctx.fillRect(x15, top, x28 - x15, h);
 
-            ctx.fillStyle = 'rgba(192, 64, 72, 0.07)';
-            ctx.fillRect(x28, top, xMax - x28, bottom - top);
+            ctx.fillStyle = 'rgba(192, 64, 72, 0.16)';
+            ctx.fillRect(x28, top, xEnd - x28, h);
 
-            // Linee verticali sulle soglie
-            [15000, 28000].forEach(thr => {
-                const x = xs.getPixelForValue(thr);
-                ctx.beginPath();
-                ctx.strokeStyle = 'rgba(255,255,255,0.12)';
-                ctx.lineWidth = 1;
-                ctx.setLineDash([4, 4]);
-                ctx.moveTo(x, top);
-                ctx.lineTo(x, bottom);
-                ctx.stroke();
-                ctx.setLineDash([]);
-            });
+            // Linee di soglia verticali
+            ctx.setLineDash([5, 5]);
+            ctx.lineWidth = 1;
+
+            ctx.strokeStyle = 'rgba(62, 179, 107, 0.5)';
+            ctx.beginPath();
+            ctx.moveTo(x15, top);
+            ctx.lineTo(x15, bottom);
+            ctx.stroke();
+
+            ctx.strokeStyle = 'rgba(192, 64, 72, 0.5)';
+            ctx.beginPath();
+            ctx.moveTo(x28, top);
+            ctx.lineTo(x28, bottom);
+            ctx.stroke();
+
+            ctx.setLineDash([]);
         },
+
         afterDraw(chart) {
-            if (!showUserMarker) return;
             const { ctx, chartArea, scales } = chart;
+            if (!chartArea) return;
             const xs = scales.x;
             const ys = scales.y;
-            const { top } = chartArea;
+            const { top, bottom, left, right } = chartArea;
 
-            const userPxX = xs.getPixelForValue(userRalOnChart);
-            const userPxY = ys.getPixelForValue(currentBonus);
+            ctx.save();
 
-            // Linea verticale posizione utente
-            ctx.beginPath();
-            ctx.strokeStyle = 'rgba(255,255,255,0.35)';
-            ctx.lineWidth = 1.5;
-            ctx.setLineDash([3, 4]);
-            ctx.moveTo(userPxX, top);
-            ctx.lineTo(userPxX, userPxY + 6);
-            ctx.stroke();
-            ctx.setLineDash([]);
+            // ── Etichette zone ────────────────────
+            const zones = [
+                {
+                    cx: (xs.getPixelForValue(0) + xs.getPixelForValue(15000)) / 2,
+                    label: 'BONUS PIENO',
+                    sub: '1.200 €/anno',
+                    color: 'rgba(62, 179, 107, 1)',
+                    subColor: 'rgba(62, 179, 107, 0.65)',
+                },
+                {
+                    cx: (xs.getPixelForValue(15000) + xs.getPixelForValue(28000)) / 2,
+                    label: 'PARZIALE',
+                    sub: '0 — 1.200€',
+                    color: 'rgba(201, 160, 48, 1)',
+                    subColor: 'rgba(201, 160, 48, 0.65)',
+                },
+                {
+                    cx: (xs.getPixelForValue(28000) + xs.getPixelForValue(CHART_MAX)) / 2,
+                    label: 'ZERO',
+                    sub: '',
+                    color: 'rgba(192, 64, 72, 1)',
+                    subColor: '',
+                },
+            ];
 
-            // Pallino posizione utente
-            ctx.beginPath();
-            ctx.arc(userPxX, userPxY, 5, 0, Math.PI * 2);
-            ctx.fillStyle = '#e8edf2';
-            ctx.fill();
-            ctx.strokeStyle = '#1d6b7a';
-            ctx.lineWidth = 2;
-            ctx.stroke();
+            zones.forEach(z => {
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                ctx.font = '600 9px DM Mono, monospace';
+                ctx.fillStyle = z.color;
+                ctx.fillText(z.label, z.cx, top + 10);
+                if (z.sub) {
+                    ctx.font = '8px DM Mono, monospace';
+                    ctx.fillStyle = z.subColor;
+                    ctx.fillText(z.sub, z.cx, top + 23);
+                }
+            });
 
-            // Etichetta "tu"
-            ctx.fillStyle = '#e8edf2';
-            ctx.font = '9px DM Mono, monospace';
-            ctx.textAlign = 'center';
-            const labelY = userPxY > top + 16 ? userPxY - 10 : userPxY + 18;
-            ctx.fillText('tu', userPxX, labelY);
-        }
+            // ── Etichette soglie sull'asse X ──────
+            const thresholds = [
+                { val: 15000, label: '15.000€', align: 'center' },
+                { val: 28000, label: '28.000€', align: 'center' },
+            ];
+            thresholds.forEach(({ val, label }) => {
+                const x = xs.getPixelForValue(val);
+                ctx.font = '8px DM Mono, monospace';
+                ctx.fillStyle = 'rgba(255,255,255,0.35)';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
+                ctx.fillText(label, x, bottom - 4);
+            });
+
+            // ── Marcatore "tu" ────────────────────
+            if (showUserMarker) {
+                const userPxX = xs.getPixelForValue(userRalOnChart);
+                const userPxY = ys.getPixelForValue(currentBonus);
+
+                // Linea verticale piena
+                ctx.beginPath();
+                ctx.strokeStyle = 'rgba(255,255,255,0.65)';
+                ctx.lineWidth = 2;
+                ctx.moveTo(userPxX, top);
+                ctx.lineTo(userPxX, bottom);
+                ctx.stroke();
+
+                // Pallino sull'intersezione con la curva
+                ctx.beginPath();
+                ctx.arc(userPxX, userPxY, 6, 0, Math.PI * 2);
+                ctx.fillStyle = '#ffffff';
+                ctx.fill();
+                ctx.strokeStyle = '#1d6b7a';
+                ctx.lineWidth = 2.5;
+                ctx.stroke();
+
+                // Callout box con il bonus
+                const bonusText = currentBonus > 0
+                    ? currentBonus.toLocaleString('it-IT') + ' €/anno'
+                    : 'nessun bonus';
+                const ralText = 'RAL ' + userRalOnChart.toLocaleString('it-IT') + ' €';
+
+                const bW = 112, bH = 42;
+                let bX = userPxX - bW / 2;
+                const bY = top + 42;  // sotto le label zona
+                if (bX < left + 2) bX = left + 2;
+                if (bX + bW > right - 2) bX = right - bW - 2;
+
+                // sfondo box
+                ctx.fillStyle = 'rgba(13,27,42,0.95)';
+                ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.rect(bX, bY, bW, bH);
+                ctx.fill();
+                ctx.stroke();
+
+                // freccia verso il basso che punta alla linea
+                if (userPxX >= bX && userPxX <= bX + bW) {
+                    ctx.fillStyle = 'rgba(13,27,42,0.95)';
+                    ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+                    ctx.beginPath();
+                    ctx.moveTo(userPxX - 5, bY);
+                    ctx.lineTo(userPxX + 5, bY);
+                    ctx.lineTo(userPxX, bY - 6);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+
+                const bCx = bX + bW / 2;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                ctx.font = 'bold 11px DM Mono, monospace';
+                ctx.fillStyle = '#e8edf2';
+                ctx.fillText(bonusText, bCx, bY + 8);
+                ctx.font = '8px DM Mono, monospace';
+                ctx.fillStyle = 'rgba(232,237,242,0.45)';
+                ctx.fillText(ralText, bCx, bY + 26);
+
+            } else {
+                // Nessun RAL: istruzione discreta in basso al centro
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
+                ctx.font = '8.5px DM Mono, monospace';
+                ctx.fillStyle = 'rgba(255,255,255,0.22)';
+                ctx.fillText('inserisci il tuo reddito per vedere la tua posizione', (left + right) / 2, bottom - 6);
+            }
+
+            ctx.restore();
+        },
     };
 
     _sogliaChart = new Chart(canvas, {
         type: 'line',
-        plugins: [bgPlugin],
+        plugins: [drawPlugin],
         data: {
             labels,
             datasets: [{
                 data: bonusData,
-                borderColor: 'rgba(99, 102, 241, 0.85)',
-                borderWidth: 2,
+                borderColor: 'rgba(255, 255, 255, 0.8)',
+                borderWidth: 2.5,
                 pointRadius: 0,
                 fill: false,
-                tension: 0.1,
+                tension: 0,
             }],
         },
         options: {
@@ -608,43 +718,31 @@ function renderSogliaChart(currentRal, currentBonus) {
             animation: { duration: 200 },
             plugins: {
                 legend: { display: false },
-                tooltip: {
-                    backgroundColor: 'rgba(13, 27, 42, 0.95)',
-                    titleColor: '#7a8898',
-                    bodyColor: '#e8edf2',
-                    borderColor: 'rgba(255,255,255,0.08)',
-                    borderWidth: 1,
-                    callbacks: {
-                        title: (items) => `RAL: ${items[0].parsed.x.toLocaleString()} €`,
-                        label: (item) => `Bonus: ${item.parsed.y.toLocaleString()} €`,
-                    }
-                }
+                tooltip: { enabled: false },
             },
+            layout: { padding: { bottom: 6 } },
             scales: {
                 x: {
                     type: 'linear',
                     min: 0,
                     max: CHART_MAX,
-                    grid: { color: 'rgba(255,255,255,0.04)' },
+                    grid: { display: false },
                     ticks: {
-                        color: '#5a6878',
-                        callback: (v) => v === 0 ? '0' : `${v / 1000}k`,
+                        color: 'rgba(255,255,255,0.2)',
+                        // Solo 0, 10k, 20k, 30k — le soglie 15k/28k sono disegnate a mano
+                        callback: (v) => (v === 0 || v === 10000 || v === 20000 || v === 30000)
+                            ? (v === 0 ? '0' : `${v / 1000}k`)
+                            : '',
                         stepSize: 5000,
                         font: { family: "'DM Mono', monospace", size: 9 },
+                        maxRotation: 0,
                     },
                     border: { color: 'rgba(255,255,255,0.08)' },
                 },
                 y: {
+                    display: false,   // valori spiegati dalle etichette zone
                     min: 0,
-                    max: 1400,
-                    grid: { color: 'rgba(255,255,255,0.04)' },
-                    ticks: {
-                        color: '#5a6878',
-                        callback: (v) => v === 0 ? '0€' : `${v}€`,
-                        stepSize: 400,
-                        font: { family: "'DM Mono', monospace", size: 9 },
-                    },
-                    border: { color: 'rgba(255,255,255,0.08)' },
+                    max: 1450,
                 },
             },
         },
