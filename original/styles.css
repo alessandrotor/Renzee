@@ -1,0 +1,715 @@
+/* ╔═══════════════════════════════════════════════════════════════════╗
+   ║                                                                   ║
+   ║  STYLES.CSS — Foglio di stile del Simulatore Bonus 2026           ║
+   ║                                                                   ║
+   ║  GUIDA RAPIDA per chi vuole fare piccole modifiche:               ║
+   ║                                                                   ║
+   ║  • I COLORI sono tutti nella sezione "COLORI" qui sotto.          ║
+   ║    Ogni colore ha un commento che spiega dove viene usato.        ║
+   ║                                                                   ║
+   ║  • Le DIMENSIONI del testo (font-size) usano "rem":              ║
+   ║    0.6rem = molto piccolo                                         ║
+   ║    0.8rem = piccolo                                               ║
+   ║    1rem   = normale                                               ║
+   ║    1.5rem = grande                                                ║
+   ║    2rem   = molto grande                                          ║
+   ║                                                                   ║
+   ║  • Gli SPAZI (margin, padding) usano "px" (pixel):               ║
+   ║    5px  = pochissimo spazio                                       ║
+   ║    10px = poco spazio                                             ║
+   ║    20px = spazio medio                                            ║
+   ║    40px = tanto spazio                                            ║
+   ║                                                                   ║
+   ╚═══════════════════════════════════════════════════════════════════╝ */
+
+
+/* ─────────────────────────────────────
+   FONT (tipo di carattere)
+   Caricati da Google Fonts
+   ───────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap');
+
+
+/* ─────────────────────────────────────
+   COLORI
+   Modifica questi valori per cambiare
+   i colori di tutta la pagina
+   ───────────────────────────────────── */
+:root {
+    --ink: #0d1b2a;                /* Testo principale (blu notte scuro) */
+    --paper: #f7f8fa;              /* Sfondo della pagina (grigio chiarissimo) */
+    --accent: #1d6b7a;             /* Colore accento/evidenziazione (petrolio) */
+    --muted: #7a8898;              /* Testo secondario/sbiadito (grigio-blu) */
+    --line: #dde2e8;               /* Linee separatrici (grigio chiaro) */
+
+    --green: #2e7d52;              /* Verde (per "Bonus Pieno") */
+    --amber: #a07c2a;              /* Ambra (per avvisi/warning) */
+    --red: #8b2b2b;                /* Rosso (per errori/pericolo) */
+
+    --input-bg: #ffffff;           /* Sfondo dei campi di input (bianco) */
+    --input-border: #ccd3db;       /* Bordo dei campi di input */
+
+    --res-bg: #0d1b2a;            /* Sfondo del riquadro risultati (blu notte) */
+    --res-text: #e8edf2;          /* Testo nel riquadro risultati (bianco-grigio) */
+    --res-muted: #7a8898;         /* Testo secondario nei risultati */
+    --res-line: #1e2f3e;          /* Linee separatrici nei risultati */
+}
+
+
+/* ─────────────────────────────────────
+   CORPO PAGINA
+   ───────────────────────────────────── */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'DM Sans', Georgia, 'Times New Roman', serif;
+    background: var(--paper);
+    color: var(--ink);
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+    margin: 0;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Contenitore principale */
+.box {
+    width: 100%;
+    max-width: 620px;              /* Larghezza massima della pagina */
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+    position: relative;
+}
+
+
+/* ─────────────────────────────────────
+   INTESTAZIONE (titolo + toggle)
+   ───────────────────────────────────── */
+.header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 3px double var(--ink);
+}
+
+/* Titolo principale */
+h2 {
+    color: var(--ink);
+    margin: 0;
+    font-size: 1.65rem;            /* Grandezza del titolo */
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    text-align: left;
+    font-family: 'DM Sans', Georgia, serif;
+}
+
+/* Etichetta "Beta" accanto al titolo */
+.beta {
+    display: inline-block;
+    font-family: 'DM Mono', 'Courier New', monospace;
+    font-size: 0.55rem;            /* Grandezza testo "Beta" */
+    background: var(--accent);
+    color: #e8f4f6;
+    padding: 2px 7px;
+    border-radius: 2px;
+    vertical-align: middle;
+    margin-left: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    transform: translateY(-3px);
+}
+
+/* Sottotitolo "— Strumento fiscale non ufficiale" */
+.tagline {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;            /* Grandezza sottotitolo */
+    color: var(--muted);
+    margin: -2px 0 0 1px;
+    letter-spacing: 0.06em;
+    font-weight: 400;
+}
+
+/* Pulsante "Reset dati" */
+.reset-btn {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.55rem;            /* Grandezza testo pulsante reset */
+    font-weight: 400;
+    cursor: pointer;
+    padding: 3px 8px;
+    border-radius: 2px;
+    transition: all 0.15s ease;
+    opacity: 0.5;
+    letter-spacing: 0.05em;
+    text-transform: lowercase;
+}
+
+.reset-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    opacity: 1;
+}
+
+.reset-btn:active {
+    transform: scale(0.97);
+}
+
+
+/* ─────────────────────────────────────
+   INTERRUTTORE (Essenziale / Completo)
+   ───────────────────────────────────── */
+.toggle-container {
+    display: flex;
+    align-items: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    gap: 6px;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 36px;
+    height: 18px;
+    margin: 0 4px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: var(--line);
+    transition: background 0.25s ease;
+    border-radius: 2px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 12px;
+    width: 12px;
+    left: 3px;
+    bottom: 3px;
+    background-color: var(--paper);
+    transition: transform 0.25s ease;
+    border-radius: 1px;
+}
+
+input:checked + .slider {
+    background-color: var(--ink);
+}
+
+input:checked + .slider:before {
+    transform: translateX(18px);
+}
+
+
+/* ─────────────────────────────────────
+   CAMPI DEL MODULO (input, select, label)
+   ───────────────────────────────────── */
+
+/* Titoli delle sezioni (es. "REDDITI", "DETRAZIONI") */
+.section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;            /* Grandezza titoli sezione */
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--muted);
+    border-bottom: 1px solid var(--line);
+    margin: 28px 0 14px;
+    padding-bottom: 6px;
+    letter-spacing: 0.12em;
+}
+
+/* Griglia per disporre i campi su 2 colonne */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 8px;
+}
+
+/* Singolo campo con la sua etichetta */
+.field {
+    margin-bottom: 14px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Etichetta sopra ogni campo (es. "RAL (Lavoro Dipendente) €") */
+label {
+    display: block;
+    font-size: 0.8rem;             /* Grandezza etichette campi */
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+}
+
+/* Note piccole sotto le etichette */
+.form-note {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;            /* Grandezza note sotto etichette */
+    color: var(--muted);
+    margin-bottom: 6px;
+    font-weight: 400;
+    margin-top: -2px;
+    font-style: normal;
+}
+
+/* Campi di input e menu a tendina */
+input,
+select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--input-border);
+    border-radius: 3px;
+    font-size: 0.95rem;            /* Grandezza testo nei campi */
+    font-family: 'DM Sans', Georgia, serif;
+    outline: none;
+    box-sizing: border-box;
+    margin-top: auto;
+    background: var(--input-bg);
+    color: var(--ink);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* Testo placeholder nei campi (es. "Es. 21000") */
+input::placeholder {
+    color: var(--muted);
+    opacity: 0.6;
+}
+
+/* Effetto quando clicchi su un campo (barra laterale color petrolio) */
+input:focus,
+select:focus {
+    border-color: var(--accent);
+    box-shadow: inset 3px 0 0 var(--accent);
+    outline: none;
+}
+
+/* Campo con valore non valido (bordo rosso) */
+input.invalid {
+    border-color: var(--red);
+    background-color: #fdf2f2;
+}
+
+/* Freccia personalizzata per menu a tendina */
+select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a8070' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+}
+
+
+/* ─────────────────────────────────────
+   ETICHETTA STIPENDIO MENSILE
+   (appare sotto il campo RAL)
+   ───────────────────────────────────── */
+.micro-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;            /* Grandezza testo "≈ X€/mese" */
+    color: var(--ink);
+    margin-top: 6px;
+    font-weight: 600;
+    min-height: 16px;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+.micro-label:not(:empty) {
+    opacity: 0.85;                 /* Visibilità (0 = invisibile, 1 = pieno) */
+}
+
+
+/* ─────────────────────────────────────
+   LINK SOTTO I CAMPI
+   (es. "↗ Cerca su sistemats.it")
+   ───────────────────────────────────── */
+.field-link {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;            /* Grandezza testo del link */
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    margin-top: 7px;
+    font-weight: 600;
+    opacity: 1;
+    transition: opacity 0.15s ease;
+    letter-spacing: 0.02em;
+}
+.field-link:hover {
+    opacity: 0.75;
+}
+
+
+/* ─────────────────────────────────────
+   RIQUADRO RISULTATI (sfondo scuro)
+   ───────────────────────────────────── */
+.res-box {
+    background: var(--res-bg);
+    color: var(--res-text);
+    padding: 24px 28px;
+    border-radius: 3px;
+    margin-top: 30px;
+    border: none;
+    position: relative;
+}
+
+/* Barra colorata laterale sinistra del riquadro risultati */
+.res-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;                    /* Larghezza barra laterale */
+    height: 100%;
+    background: var(--accent);
+    border-radius: 3px 0 0 3px;
+}
+
+/* Etichetta stato (es. "BONUS PIENO", "NESSUN BONUS") */
+.badge {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    padding: 4px 12px;
+    border-radius: 2px;
+    color: var(--res-bg);
+    font-size: 0.6rem;             /* Grandezza testo badge */
+    font-weight: 500;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    background: var(--muted);
+}
+
+/* Righe dei risultati (es. "Reddito Complessivo: 21.000 €") */
+.line {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.88rem;            /* Grandezza testo risultati */
+    color: var(--res-text);
+}
+
+/* Sotto-righe dei risultati (es. "Lavoro Dipendente: 2.551 €") */
+.line.sub {
+    padding-left: 14px;
+    font-size: 0.78rem;            /* Grandezza testo sotto-righe */
+    color: var(--res-muted);
+    border-left: 2px solid var(--res-line);
+}
+
+.line.highlight {
+    font-weight: 700;
+    color: var(--res-text);
+    padding-top: 10px;
+    border-top: 1px solid var(--res-line);
+    margin-top: 5px;
+}
+
+/* Riga finale "BONUS ANNUO: X €" (la più importante!) */
+.total-bonus {
+    font-weight: 700;
+    font-size: 1.5rem;             /* Grandezza del risultato finale */
+    color: var(--paper);
+    display: flex;
+    justify-content: space-between;
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--res-line);
+    font-family: 'DM Sans', Georgia, serif;
+    letter-spacing: -0.02em;
+}
+
+
+/* ─────────────────────────────────────
+   MESSAGGI DI AVVISO
+   ───────────────────────────────────── */
+.alert {
+    padding: 12px 14px;
+    border-radius: 3px;
+    font-size: 0.78rem;            /* Grandezza testo avvisi */
+    margin-top: 12px;
+    display: none;
+    border-left: 3px solid;
+    line-height: 1.5;
+}
+
+/* Avviso giallo (ti mancano X€ di detrazioni) */
+.alert-gap {
+    background: #3d350f22;
+    border-color: var(--amber);
+    color: #d4a017;
+}
+
+/* Avviso rosso (soglia superata) */
+.alert-danger {
+    background: #a63d4022;
+    border-color: var(--red);
+    color: #d06060;
+}
+
+/* Avviso verde (margine residuo) */
+.alert-info {
+    background: #4a7c5922;
+    border-color: var(--green);
+    color: #7cb890;
+}
+
+/* Avviso arancione (vicino alla soglia) */
+.alert-warning {
+    background: #b8860b22;
+    border-color: var(--amber);
+    color: #d4a017;
+}
+
+
+/* ─────────────────────────────────────
+   LOGICA MOSTRA/NASCONDI
+   (Essenziale vs Completo)
+   ───────────────────────────────────── */
+.adv-only {
+    display: none;
+}
+
+.mode-full .adv-only {
+    display: block;
+}
+
+.mode-full .adv-field {
+    display: flex;
+}
+
+
+/* ─────────────────────────────────────
+   MESSAGGIO INIZIALE
+   (quando non ci sono ancora dati)
+   ───────────────────────────────────── */
+.empty-hint {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 22px 0 14px;
+    color: var(--res-muted);
+}
+
+.empty-icon {
+    font-size: 1.6rem;             /* Grandezza icona ◈ */
+    margin-bottom: 10px;
+    opacity: 0.35;
+    color: var(--res-text);
+    line-height: 1;
+}
+
+.empty-hint p {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;            /* Grandezza testo messaggio iniziale */
+    margin: 0;
+    line-height: 1.7;
+    letter-spacing: 0.02em;
+}
+
+
+/* ─────────────────────────────────────
+   BARRA DI PROGRESSO REDDITO
+   (nel riquadro risultati)
+   ───────────────────────────────────── */
+.income-bar {
+    margin: 8px 0 20px;
+}
+
+.income-track {
+    height: 5px;                   /* Altezza della barra */
+    background: var(--res-line);
+    border-radius: 3px;
+    position: relative;
+    overflow: visible;
+}
+
+.income-fill {
+    height: 100%;
+    border-radius: 3px;
+    width: 0;
+    transition: width 0.45s cubic-bezier(0.4,0,0.2,1), background 0.35s ease;
+    max-width: 100%;
+}
+
+/* Tacca verticale che indica la soglia dei 15.000€ */
+.income-marker {
+    position: absolute;
+    top: -4px;
+    width: 1px;
+    height: 13px;
+    background: rgba(255,255,255,0.2);
+    transform: translateX(-50%);
+}
+
+.marker-label {
+    position: absolute;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.52rem;
+    color: var(--res-muted);
+    white-space: nowrap;
+}
+
+/* Riga sotto la barra con "Reddito: X€" e "● Bonus Pieno" */
+.income-bar-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;            /* Grandezza testo sotto la barra */
+    color: var(--res-muted);
+}
+
+.income-bar-meta strong {
+    color: var(--res-text);
+    font-weight: 500;
+}
+
+#income-bar-status {
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+
+/* ─────────────────────────────────────
+   ANIMAZIONE NUMERI
+   (effetto "conteggio" quando cambiano)
+   ───────────────────────────────────── */
+@keyframes val-pop {
+    0%   { opacity: 0.3; transform: translateY(-3px); }
+    100% { opacity: 1;   transform: translateY(0); }
+}
+
+.val-pop {
+    animation: val-pop 0.22s ease forwards;
+}
+
+
+/* ─────────────────────────────────────
+   VERSIONE MOBILE (schermi piccoli)
+   Si attiva su schermi sotto i 500px
+   ───────────────────────────────────── */
+@media (max-width: 500px) {
+    body {
+        padding: 12px 10px;
+    }
+
+    .box {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .header-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        order: -3;
+    }
+
+    h2 {
+        font-size: 1.2rem;
+    }
+
+    .input-group-redditi {
+        order: -2;
+        margin-bottom: 4px;
+    }
+
+    .input-group-redditi .grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .input-group-redditi .field {
+        margin-bottom: 0;
+    }
+
+    .res-box {
+        padding: 14px 16px;
+        margin-top: 2px;
+        margin-bottom: 12px;
+        order: -1;
+    }
+
+    .section-title {
+        margin: 8px 0 4px;
+        font-size: 0.6rem;
+    }
+
+    .grid {
+        gap: 8px;
+        margin-bottom: 4px;
+    }
+
+    .field {
+        margin-bottom: 8px;
+    }
+
+    input,
+    select {
+        padding: 7px 10px;
+        font-size: 0.9rem;
+    }
+
+    .line {
+        font-size: 0.78rem;
+        margin-bottom: 3px;
+    }
+
+    .line.sub {
+        font-size: 0.72rem;
+    }
+
+    .total-bonus {
+        font-size: 1.1rem;
+        margin-top: 8px;
+        padding-top: 8px;
+    }
+
+    .alert {
+        padding: 8px 10px;
+        font-size: 0.72rem;
+        margin-top: 6px;
+    }
+
+    /* Nasconde il sottotitolo su mobile per risparmiare spazio */
+    .tagline { display: none; }
+
+    .income-bar-meta { margin-top: 18px; font-size: 0.58rem; }
+    .empty-hint { padding: 10px 0 6px; }
+    .empty-hint p { font-size: 0.65rem; }
+}
